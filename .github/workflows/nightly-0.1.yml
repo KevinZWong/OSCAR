@@ -116,7 +116,7 @@ jobs:
     #    LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
 
     needs: [get_build_name_with_sha, build, check_for_gateway]
-    if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
+    #if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
     steps:
       - name: Download NFF artifact
       run: echo "more details......"
