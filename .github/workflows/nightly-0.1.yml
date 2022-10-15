@@ -63,3 +63,19 @@ jobs:
       - name: work around permission issue, GitHub Actions #760       
         run: echo "more details......"
 
+  check_for_gateway:
+    runs-on: aws-lager-runner
+    name: Check for existance of a gateway
+    #container:
+    #  image: docker://lagerdata/lager-cli
+    #  env:
+    #    LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+    #    LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+    #outputs:
+    #  gateway_state: ${{ steps.confirm_gateway_online.outputs.is_online }}
+    steps:
+      - id: confirm_gateway_online
+        continue-on-error: true
+        name: check if gateway is online
+    #    run: lager gateway hello>/dev/null;if (test $? -gt 0); then echo "::set-output name=is_online::false"; fi
+        run: echo "more details......"
