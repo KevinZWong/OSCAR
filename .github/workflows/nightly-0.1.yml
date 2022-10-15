@@ -125,22 +125,18 @@ jobs:
 
   ota_release:
     needs: [build, get_build_name_with_sha]
-    #if: ${{ github.event_name == 'workflow_dispatch' }}
-    #uses: ./.github/workflows/ota.yaml
-    #with:
-    #  version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
-
-    run: echo "Not-needed, just make it work...  more details......"
-
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    uses: ./.github/workflows/ota.yaml
+    with:
+      version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
 
   symbol_upload:
     needs: [build, get_build_name_with_sha]
-    #if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
-    #uses: ./.github/workflows/symbol_upload.yaml
-    #with:
-    #  version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
-
-    run: echo "Not-needed, just make it work...  more details......"
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
+    uses: ./.github/workflows/symbol_upload.yaml
+    with:
+      version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+      
 
   upload_to_gdrive:
     needs: [ build, get_build_name_with_sha ]
