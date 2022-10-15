@@ -119,17 +119,17 @@ jobs:
     #if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
     steps:
       - name: Download NFF artifact
-      run: echo "more details......"
+        run: echo "more details......"
 
-  ota_release:
-    needs: [build, get_build_name_with_sha]
+  #ota_release:
+  #  needs: [build, get_build_name_with_sha]
     #if: ${{ github.event_name == 'workflow_dispatch' }}
     #uses: ./.github/workflows/ota.yaml
     #with:
     #  version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
 
-  symbol_upload:
-    needs: [build, get_build_name_with_sha]
+  #symbol_upload:
+  #  needs: [build, get_build_name_with_sha]
     #if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
     #uses: ./.github/workflows/symbol_upload.yaml
     #with:
