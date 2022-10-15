@@ -130,8 +130,8 @@ jobs:
     #with:
     #  version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
 
-      - name: Not-needed, just make it work...
-        run: echo "more details......"
+    run: echo "Not-needed, just make it work...  more details......"
+
 
   symbol_upload:
     needs: [build, get_build_name_with_sha]
@@ -140,8 +140,7 @@ jobs:
     #with:
     #  version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
 
-      - name: Not-needed, just make it work...
-        run: echo "more details......"
+    run: echo "Not-needed, just make it work...  more details......"
 
   upload_to_gdrive:
     needs: [ build, get_build_name_with_sha ]
