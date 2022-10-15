@@ -1,0 +1,144 @@
+name: Nightly Build
+on:
+  push:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # run this build every night at 8:00pm Pacific time, 20h+(8 for UTC)
+    - cron:  '0 4 * * *'
+  workflow_dispatch:
+
+env:
+  #LAGER_GATEWAY: ${{secrets.LAGER_GATEWAY}}
+  #BUILD_RUN_NUMBER: ${{ github.run_number }}
+
+
+jobs:
+  get_build_name_with_sha:
+    runs-on: ubuntu-latest
+    outputs:
+      BUILD_NAME_WITH_SHA: ${{ steps.get_ver_prefix.outputs.ver_prefix }}${{ env.BUILD_RUN_NUMBER }}_${{ steps.get_git_sha.outputs.git_sha }}
+    steps:
+      - name: Checkout the code (shallow)
+        run: echo "more details......"
+
+      - name: parse version.def
+        run: echo "more details......"
+
+      - id: get_ver_prefix
+        run: echo "::set-output name=ver_prefix::${VERSION_MAJOR}.${VERSION_MINOR}${VERSION_FLAVOR}"
+
+      - id: get_git_sha
+        run: echo "::set-output name=git_sha::`echo ${GITHUB_SHA} | cut -c1-8`"
+
+  build:
+    needs: [get_build_name_with_sha]
+    runs-on: ubuntu-latest
+
+    #container:
+    #  image: docker://chewielabs/devenv:version-1.6
+    #  credentials:
+    #    username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #    password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+    steps:
+      - name: work around permission issue, GitHub Actions #760
+        run: echo "more details......"
+
+      - name: Checkout the code
+        run: echo "more details......"
+
+      - name: Build CLI, BLO
+        run: echo "more details......"
+
+      - name: Build ESP32 Project
+        run: echo "more details......"
+
+      - name: Build ESP32 Project release
+        run: echo "more details......"
+
+  host_unit_test:
+    needs: [get_build_name_with_sha, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: work around permission issue, GitHub Actions #760       
+        run: echo "more details......"
+
+  check_for_gateway:
+    runs-on: aws-lager-runner
+    name: Check for existance of a gateway
+    #container:
+    #  image: docker://lagerdata/lager-cli
+    #  env:
+    #    LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+    #    LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+    #outputs:
+    #  gateway_state: ${{ steps.confirm_gateway_online.outputs.is_online }}
+    steps:
+      - id: confirm_gateway_online
+        continue-on-error: true
+        name: check if gateway is online
+    #    run: lager gateway hello>/dev/null;if (test $? -gt 0); then echo "::set-output name=is_online::false"; fi
+
+  connect_debugger:
+    needs: [check_for_gateway]
+    #if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
+    runs-on: aws-lager-runner
+    #container:
+    #  image: docker://lagerdata/lager-cli
+    #  env:
+    #    LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+    #    LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+
+    steps:
+      - name: Connect to SWD
+    #    run: lager connect --device at91sam4sd32x --interface cmsis-dap --transport swd --speed 1000 --force   
+
+  flash_sam4s:
+    runs-on: aws-lager-runner
+    #container:
+    #  image: docker://lagerdata/lager-cli
+    #  env:
+    #    LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+    #    LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+
+    needs: [get_build_name_with_sha, connect_debugger, build]
+
+    steps:
+      - name: Download NFF artifact       
+        run: echo "more details......"
+
+  flash_esp32:
+    runs-on: aws-lager-runner
+    #container:
+    #  image: docker://lagerdata/devenv-cortexm-minimal:version-1.2
+    #  env:
+    #    LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+    #    LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+
+    needs: [get_build_name_with_sha, build, check_for_gateway]
+    if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
+    steps:
+      - name: Download NFF artifact
+      run: echo "more details......"
+
+  ota_release:
+    needs: [build, get_build_name_with_sha]
+    #if: ${{ github.event_name == 'workflow_dispatch' }}
+    #uses: ./.github/workflows/ota.yaml
+    #with:
+    #  version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+
+  symbol_upload:
+    needs: [build, get_build_name_with_sha]
+    #if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
+    #uses: ./.github/workflows/symbol_upload.yaml
+    #with:
+    #  version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+
+  upload_to_gdrive:
+    needs: [ build, get_build_name_with_sha ]
+    runs-on: ubuntu-latest
+
+  publish_failures_to_slack:
+    needs: [build, flash_sam4s, flash_esp32, upload_to_gdrive, host_unit_test]
+    runs-on: ubuntu-latest
