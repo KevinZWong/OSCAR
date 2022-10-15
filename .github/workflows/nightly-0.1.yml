@@ -108,3 +108,57 @@ jobs:
     steps:
       - name: Download NFF artifact       
         run: echo "more details......"
+
+  flash_esp32:
+    runs-on: aws-lager-runner
+    #container:
+    #  image: docker://lagerdata/devenv-cortexm-minimal:version-1.2
+    #  env:
+    #    LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+    #    LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+
+    needs: [get_build_name_with_sha, build, check_for_gateway]
+    #if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
+    steps:
+      - name: Download NFF artifact
+        run: echo "more details......"
+
+  ota_release:
+    needs: [build, get_build_name_with_sha]
+    #if: ${{ github.event_name == 'workflow_dispatch' }}
+    #uses: ./.github/workflows/ota.yaml
+    #with:
+    #  version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+
+      - name: Not-needed, just make it work...
+        run: echo "more details......"
+
+  symbol_upload:
+    needs: [build, get_build_name_with_sha]
+    #if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
+    #uses: ./.github/workflows/symbol_upload.yaml
+    #with:
+    #  version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+
+      - name: Not-needed, just make it work...
+        run: echo "more details......"
+
+  upload_to_gdrive:
+    needs: [ build, get_build_name_with_sha ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Authenticate to Google Cloud'
+        run: echo "more details......"
+
+  publish_failures_to_slack:
+    needs: [build, flash_sam4s, flash_esp32, upload_to_gdrive, host_unit_test]
+    runs-on: ubuntu-latest
+    if: failure() && github.ref == 'refs/heads/main'
+    continue-on-error: true  # Don't allow this step to fail the build.
+    steps:
+      - name: Notify slack fail
+        run: echo "more details......"
