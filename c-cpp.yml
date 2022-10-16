@@ -1,0 +1,85 @@
+name: C/C++ CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  get_sha:
+    runs-on: ubuntu-latest
+    outputs:
+      SHORT_SHA: ${{ steps.step1.outputs.output1 }}
+    steps:
+      - id: step1
+        run: echo "::set-output name=output1::`echo ${GITHUB_SHA} | cut -c1-8`"
+
+  check-build-for-success:
+    needs: [get_sha]
+    runs-on: ubuntu-latest
+    container:
+      image: docker://chewielabs/devenv:version-1.7
+      credentials:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}      
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          submodules: recursive
+
+      - name: Build CLI, BLO, ESP32 Projects
+        run: lager exec build-all
+
+      - name: Build CLI, BLO, ESP32 Projects Release
+        run: lager exec build-all-release
+
+      - name: Build CLI Unit-Tests
+        run: lager exec build-unit-test-cli
+
+      - name: save CLI unit tests
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: test_cli
+          path: ./unit-tests/test_suites/test_cli/build/test_cli.hex
+          retention-days: 3
+
+      - name: save the CLI app
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: app
+          path: |
+            ./sam4s/cli_app/build-nff-debug/oscar_controls_app_${{ needs.get_sha.outputs.SHORT_SHA }}*
+            ./sam4s/cli_app/build-evt-debug/oscar_controls_app_${{ needs.get_sha.outputs.SHORT_SHA }}*
+            ./sam4s/cli_app/build-dvt-debug/oscar_controls_app_${{ needs.get_sha.outputs.SHORT_SHA }}*
+            ./sam4s/cli_app/build-nff-release/oscar_controls_app_${{ needs.get_sha.outputs.SHORT_SHA }}*
+            ./sam4s/cli_app/build-evt-release/oscar_controls_app_${{ needs.get_sha.outputs.SHORT_SHA }}*
+            ./sam4s/cli_app/build-dvt-release/oscar_controls_app_${{ needs.get_sha.outputs.SHORT_SHA }}*
+          retention-days: 3
+
+      - name: save the BLO app
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: blo
+          path: |
+            ./sam4s/blo_app/build-nff-debug/oscar_controls_blo_${{ needs.get_sha.outputs.SHORT_SHA }}.*
+            ./sam4s/blo_app/build-evt-debug/oscar_controls_blo_${{ needs.get_sha.outputs.SHORT_SHA }}.*
+            ./sam4s/blo_app/build-dvt-debug/oscar_controls_blo_${{ needs.get_sha.outputs.SHORT_SHA }}.*
+            ./sam4s/blo_app/build-nff-release/oscar_controls_blo_${{ needs.get_sha.outputs.SHORT_SHA }}.*
+            ./sam4s/blo_app/build-evt-release/oscar_controls_blo_${{ needs.get_sha.outputs.SHORT_SHA }}.*
+            ./sam4s/blo_app/build-dvt-release/oscar_controls_blo_${{ needs.get_sha.outputs.SHORT_SHA }}.*
+          retention-days: 3
+
+      - name: save the ESP32 app
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: oscar_comms_app
+          path: |
+            ./esp32/build/bootloader/bootloader.*
+            ./esp32/build/partition_table/partition-table.bin
+            ./esp32/build/oscar_comms_app.*
+            ./esp32/build/spiffs.bin
+            ./esp32/build/ota_data_initial.bin
+            ./esp32/build/*args
+          retention-days: 3

@@ -1,0 +1,341 @@
+name: Nightly Build
+on:
+  push:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # run this build every night at 8:00pm Pacific time, 20h+(8 for UTC)
+    - cron:  '0 4 * * *'
+  workflow_dispatch:
+
+env:
+  LAGER_GATEWAY: ${{secrets.LAGER_GATEWAY}}
+  BUILD_RUN_NUMBER: ${{ github.run_number }}
+
+jobs:
+  get_build_name_with_sha:
+    runs-on: ubuntu-latest
+    outputs:
+      BUILD_NAME_WITH_SHA: ${{ steps.get_ver_prefix.outputs.ver_prefix }}${{ env.BUILD_RUN_NUMBER }}_${{ steps.get_git_sha.outputs.git_sha }}
+    steps:
+      - name: Checkout the code (shallow)
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+      - name: parse version.def
+        uses: c-py/action-dotenv-to-setenv@v2
+        with:
+          env-file: ./version.def
+
+      - id: get_ver_prefix
+        run: echo "::set-output name=ver_prefix::${VERSION_MAJOR}.${VERSION_MINOR}${VERSION_FLAVOR}"
+
+      - id: get_git_sha
+        run: echo "::set-output name=git_sha::`echo ${GITHUB_SHA} | cut -c1-8`"
+
+  build:
+    needs: [get_build_name_with_sha]
+    runs-on: ubuntu-latest
+    container:
+      image: docker://chewielabs/devenv:version-1.6
+      credentials:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+    steps:
+      - name: work around permission issue, GitHub Actions #760
+        run: git config --global --add safe.directory /__w/Oscar/Oscar
+      - run: echo ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          submodules: recursive
+
+      - name: Build CLI, BLO
+        run: make Q= BUILD_RUN_NUMBER=${{ github.run_number }} all  -j$(getconf _NPROCESSORS_ONLN)
+
+      - name: Build ESP32 Project
+        run: . $IDF_PATH/export.sh; cd esp32; ./esp32_build.sh all "${{ env.BUILD_RUN_NUMBER }}"
+
+      - name: Build ESP32 Project release
+        run: . $IDF_PATH/export.sh; cd esp32; ./esp32_build.sh all "${{ env.BUILD_RUN_NUMBER }}" release
+
+      - name: Move NFF build files into common location
+        run: ./scripts/create_artifact.sh nff-debug
+
+      - name: Move EVT build files into common location
+        run: ./scripts/create_artifact.sh evt-debug
+
+      - name: Move DVT build files into common location
+        run: ./scripts/create_artifact.sh dvt-debug
+
+      - name: Move NFF build files into common location
+        run: ./scripts/create_artifact.sh nff-release
+
+      - name: Move EVT build files into common location
+        run: ./scripts/create_artifact.sh evt-release
+
+      - name: Move DVT build files into common location
+        run: ./scripts/create_artifact.sh dvt-release
+
+      - name: Save the NFF code
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: oscar_nff_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: ./build-nff-debug
+          retention-days: 7
+
+      - name: Save the EVT code
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: oscar_evt_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: ./build-evt-debug
+          retention-days: 7
+
+      - name: Save the DVT code
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: oscar_dvt_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: ./build-dvt-debug
+          retention-days: 7
+
+      - name: Save the NFF code Release
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: oscar_nff_release_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: ./build-nff-release
+          retention-days: 7
+
+      - name: Save the EVT code Release
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: oscar_evt_release_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: ./build-evt-release
+          retention-days: 7
+
+      - name: Save the DVT code Release
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: oscar_dvt_release_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: ./build-dvt-release
+          retention-days: 7
+
+      - name: Save the build autogen artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: oscar_build_autogen_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: ./sam4s/cli_app/build-autogen
+          retention-days: 7
+
+  host_unit_test:
+    needs: [get_build_name_with_sha, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: work around permission issue, GitHub Actions #760
+        run: git config --global --add safe.directory /__w/Oscar/Oscar
+
+      - run: echo ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          submodules: recursive
+
+      - run: mkdir ${{ github.workspace }}/sam4s/cli_app/build-autogen
+
+      - name: Download the build autogen artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: oscar_build_autogen_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: ${{ github.workspace }}/sam4s/cli_app/build-autogen
+
+      - name: Load the docker image and run ceedling unit test
+        uses: addnab/docker-run-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          image: chewielabs/host_ut_ceedling_multi_arch:v1.0.1
+          options: -v ${{ github.workspace }}:/project
+          run: ./scripts/host_unit_test/run_host_ut.sh
+            
+      - name: Publish unit tests results
+        uses: EnricoMi/publish-unit-test-result-action@v2.0.0
+        if: always()
+        with:
+          junit_files: ${{ github.workspace }}/**/report.xml
+      
+      - name: Move gcov results to common location
+        run: |
+          chmod +x ./scripts/host_unit_test/upload_gcov.sh
+          ./scripts/host_unit_test/upload_gcov.sh
+        shell: bash
+
+      - name: Save the gcov results
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: host_ut_gcov_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: ./host_ut_artifact/gcov
+          retention-days: 7
+
+  check_for_gateway:
+    runs-on: aws-lager-runner
+    name: Check for existance of a gateway
+    container:
+      image: docker://lagerdata/lager-cli
+      env:
+        LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+        LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+    outputs:
+      gateway_state: ${{ steps.confirm_gateway_online.outputs.is_online }}
+    steps:
+      - id: confirm_gateway_online
+        continue-on-error: true
+        name: check if gateway is online
+        run: lager gateway hello>/dev/null;if (test $? -gt 0); then echo "::set-output name=is_online::false"; fi
+
+  connect_debugger:
+    needs: [check_for_gateway]
+    if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
+    runs-on: aws-lager-runner
+    container:
+      image: docker://lagerdata/lager-cli
+      env:
+        LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+        LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+
+    steps:
+      - name: Connect to SWD
+        run: lager connect --device at91sam4sd32x --interface cmsis-dap --transport swd --speed 1000 --force
+
+  flash_sam4s:
+    runs-on: aws-lager-runner
+    container:
+      image: docker://lagerdata/lager-cli
+      env:
+        LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+        LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+
+    needs: [get_build_name_with_sha, connect_debugger, build]
+
+    steps:
+      - name: Download NFF artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: oscar_nff_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: /tmp
+
+      - name: List available images
+        run: ls -R /tmp
+
+      - name: Flash blo and cli
+        run: lager flash --hexfile /tmp/oscar_controls_blo/oscar_controls_blo.hex --hexfile /tmp/oscar_controls_app/oscar_controls_app-A.hex --hexfile /tmp/oscar_controls_app/oscar_controls_app-B.hex
+
+      - name: Start SAM4S Running
+        run: lager reset
+
+  flash_esp32:
+    runs-on: aws-lager-runner
+    container:
+      image: docker://lagerdata/devenv-cortexm-minimal:version-1.2
+      env:
+        LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+        LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+
+    needs: [get_build_name_with_sha, build, check_for_gateway]
+    if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
+    steps:
+      - name: Download NFF artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: oscar_nff_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: /tmp
+
+      # Can't flash directly from the image folder, since it's too large for lager with the .elf
+      # included. So we pull the .bin/.py files into their own folder.
+      - name: Extract .bin files
+        run: |
+          mkdir -p /tmp/flash_with_lager/oscar_comms_app
+          find /tmp/oscar_comms_app -name '*.bin' -exec cp -prv '{}' '/tmp/flash_with_lager/oscar_comms_app/' ';'
+          # Lager requires entrypoint script to be named "main.py"
+          # https://docs.lagerdata.com/gateway-lager/modules_and_files.html#modules-and-files
+          cp /tmp/flash_esp32.py /tmp/flash_with_lager/main.py
+          cp /tmp/esptool.py /tmp/flash_with_lager
+      - name: Flash esp32
+        run: |
+          lager python /tmp/flash_with_lager
+  ota_release:
+    needs: [build, get_build_name_with_sha]
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    uses: ./.github/workflows/ota.yaml
+    with:
+      version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+
+  symbol_upload:
+    needs: [build, get_build_name_with_sha]
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
+    uses: ./.github/workflows/symbol_upload.yaml
+    with:
+      version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+
+  upload_to_gdrive:
+    needs: [ build, get_build_name_with_sha ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Authenticate to Google Cloud'
+        id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: 'projects/461196899080/locations/global/workloadIdentityPools/github/providers/github-actions-provider'
+          service_account: 'github@chewie-automation.iam.gserviceaccount.com'
+          access_token_lifetime: '300s'
+          access_token_scopes: 'https://www.googleapis.com/auth/drive'
+      - name: Download evt build
+        uses: actions/download-artifact@v2
+        with:
+          name: oscar_evt_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: /tmp/oscar_evt_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+      - name: Download evt build release
+        uses: actions/download-artifact@v2
+        with:
+          name: oscar_evt_release_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: /tmp/oscar_evt_release_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+      - name: Download dvt build
+        uses: actions/download-artifact@v2
+        with:
+          name: oscar_dvt_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: /tmp/oscar_dvt_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+      - name: Download dvt build release
+        uses: actions/download-artifact@v2
+        with:
+          name: oscar_dvt_release_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+          path: /tmp/oscar_dvt_release_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+      - name: 'Configure Python Environment'
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      - run: pip install -r ./scripts/upload_to_google_drive/requirements.txt
+      - run: python ./scripts/upload_to_google_drive/upload_to_google_drive.py --token ${{ steps.auth.outputs.access_token }} --artifact /tmp/oscar_evt_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }} --branch ${{ github.ref }}
+      - run: python ./scripts/upload_to_google_drive/upload_to_google_drive.py --token ${{ steps.auth.outputs.access_token }} --artifact /tmp/oscar_evt_release_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }} --branch ${{ github.ref }}
+      - run: python ./scripts/upload_to_google_drive/upload_to_google_drive.py --token ${{ steps.auth.outputs.access_token }} --artifact /tmp/oscar_dvt_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }} --branch ${{ github.ref }}
+      - run: python ./scripts/upload_to_google_drive/upload_to_google_drive.py --token ${{ steps.auth.outputs.access_token }} --artifact /tmp/oscar_dvt_release_${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }} --branch ${{ github.ref }}
+  publish_failures_to_slack:
+    needs: [build, flash_sam4s, flash_esp32, upload_to_gdrive, host_unit_test]
+    runs-on: ubuntu-latest
+    if: failure() && github.ref == 'refs/heads/main'
+    continue-on-error: true  # Don't allow this step to fail the build.
+    steps:
+      - name: Notify slack fail
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel_id: C02BK7GENSV # notify-github-oscar
+          status: FAILED
+          color: danger

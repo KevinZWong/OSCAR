@@ -1,0 +1,27 @@
+# This is a basic workflow to help you get started with Actions
+
+name: PR_Checks
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run a one-line script
+        run: ls -l test1
+
+      - name: Add more chars
+        run: |
+          echo "add 13 chars" >> test1
+          ls -l test1
+      
+
+
