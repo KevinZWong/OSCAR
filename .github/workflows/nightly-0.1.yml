@@ -36,6 +36,8 @@ jobs:
 
       - name: PRINT-OUT results
         run: |
+          ls -al
+          pwd
           echo ${{secrets.MACHINE_ACCESS_TOKEN}}
           echo ${{secrets.LAGER_GATEWAY}}
           echo ${{ env.LAGER_GATEWAY }}
