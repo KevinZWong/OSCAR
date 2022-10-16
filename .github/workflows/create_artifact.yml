@@ -19,9 +19,9 @@ jobs:
       - name: step 2 - Add artifacts to publish to the temp folder
         run: |
           cd downloads
-            echo "alpha" > adpha.html
-            echo "bravo" > bravo.html
-            echo "charlie" > charlie.html
+            echo "alpha 12345" > adpha.html
+            echo "bravo 12345" > bravo.html
+            echo "charlie 12345" > charlie.html
             cd ..
 
       - name: Step 3 - Use the Upload Artitact Github Action
@@ -29,3 +29,12 @@ jobs:
         with:
           name: assets-for-download
           path: downloads
+
+      - name: Step 4 - less-is-more testing
+        uses: caponetto/less-is-more@v1
+        with:
+          released_artifact_name: assets-for-download
+          artifact_path: downloads
+          max_increase_percentage: 10
+          #github_token: ${{ secrets.MY_TOKEN }}
+  
