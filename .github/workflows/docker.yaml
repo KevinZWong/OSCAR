@@ -22,13 +22,13 @@ jobs:
     - name: docker build python
       run: |
         docker build ./python -t guowong/python:1.0.0
-    - name: docker build golang
-      run: |
-        docker build ./golang -t guowong/golang:1.0.0
+    #- name: docker build golang
+    #  run: |
+    #    docker build ./golang -t guowong/golang:1.0.0
     - name: docker push
       run: |
         docker push guowong/csharp:1.0.0
         docker push guowong/nodejs:1.0.0
-        docker push guowong/golang:1.0.0
+        # docker push guowong/golang:1.0.0
         docker push guowong/python:1.0.0
 
