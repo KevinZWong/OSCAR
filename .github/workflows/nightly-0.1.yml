@@ -7,9 +7,9 @@ on:
     - cron:  '0 4 * * *'
   workflow_dispatch:
 
-#env:
-  #LAGER_GATEWAY: ${{secrets.LAGER_GATEWAY}}
-  #BUILD_RUN_NUMBER: ${{ github.run_number }}
+env:
+  LAGER_GATEWAY: ${{secrets.LAGER_GATEWAY}}
+  BUILD_RUN_NUMBER: ${{ github.run_number }}
 
 
 jobs:
