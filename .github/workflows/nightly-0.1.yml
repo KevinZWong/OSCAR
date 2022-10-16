@@ -10,6 +10,7 @@ on:
 env:
   LAGER_GATEWAY: ${{secrets.LAGER_GATEWAY}}
   BUILD_RUN_NUMBER: ${{ github.run_number }}
+  GUO_ENV_VAR1: "guo"
 
 
 jobs:
@@ -55,11 +56,19 @@ jobs:
           echo ${{secrets.MACHINE_ACCESS_TOKEN}}
           echo "${{ secrets.MACHINE_ACCESS_TOKEN }}"
           echo "$secrets.MACHINE_ACCESS_TOKEN"
+          echo "$MACHINE_ACCESS_TOKEN"
 
           echo ${{secrets.LAGER_GATEWAY}}
           echo ${{ env.LAGER_GATEWAY }}
           echo "${{ env.LAGER_GATEWAY }}"
           echo "$env.LAGER_GATEWAY"
+          echo "$LAGER_GATEWAY"
+
+          echo ${{secrets.GUO_ENV_VAR1}}
+          echo ${{ env.GUO_ENV_VAR1 }}
+          echo "${{ env.GUO_ENV_VAR1 }}"
+          echo "$env.GUO_ENV_VAR1"
+          echo "$GUO_ENV_VAR1"
 
           echo "GITHUB_ACTION:  ${GITHUB_ACTION}"
 
