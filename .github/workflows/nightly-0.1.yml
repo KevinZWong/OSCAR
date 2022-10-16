@@ -20,8 +20,8 @@ jobs:
     steps:
       - name: Checkout the code (shallow)
         uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+        #with:
+        #  token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
 
       - name: parse version.def
         uses: c-py/action-dotenv-to-setenv@v2
