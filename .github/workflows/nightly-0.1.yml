@@ -19,7 +19,9 @@ jobs:
       BUILD_NAME_WITH_SHA: ${{ steps.get_ver_prefix.outputs.ver_prefix }}${{ env.BUILD_RUN_NUMBER }}_${{ steps.get_git_sha.outputs.git_sha }}
     steps:
       - name: Checkout the code (shallow)
-        run: echo "more details......"
+        run: |
+          echo "more details......"
+
 
       - name: parse version.def
         run: echo "more details......"
@@ -29,6 +31,13 @@ jobs:
 
       - id: get_git_sha
         run: echo "::set-output name=git_sha::`echo ${GITHUB_SHA} | cut -c1-8`"
+
+      - name: PRINT-OUT results
+        run: |
+          echo ${{ steps.get_ver_prefix.outputs.ver_prefix }}
+          echo ${{ env.BUILD_RUN_NUMBER }}
+          echo ${{ steps.get_git_sha.outputs.git_sha }}
+          echo ${{ steps.get_ver_prefix.outputs.ver_prefix }}${{ env.BUILD_RUN_NUMBER }}_${{ steps.get_git_sha.outputs.git_sha }}
 
   build:
     needs: [get_build_name_with_sha]
