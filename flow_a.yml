@@ -12,7 +12,7 @@ env:
   BUILD_RUN_NUMBER: ${{ github.run_number }}
 
 jobs:
-  # 1a ======================
+  # a1 ======================
   get_build_name_with_sha:
     runs-on: ubuntu-latest
     outputs:
@@ -20,7 +20,7 @@ jobs:
 
     steps:
 
-  #======================
+  # a2 ======================
   build:
     needs: [get_build_name_with_sha]
     runs-on: ubuntu-latest
@@ -31,47 +31,13 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_TOKEN }}
     steps:    
 
-
-  host_unit_test:
-    needs: [get_build_name_with_sha, build]
-    runs-on: ubuntu-latest
-    steps:
-
-  # 1b ======================
-  check_for_gateway:
-    runs-on: aws-lager-runner
-    name: Check for existance of a gateway
-    container:
-      image: docker://lagerdata/lager-cli
-      env:
-        LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
-        LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
-    outputs:
-      gateway_state: ${{ steps.confirm_gateway_online.outputs.is_online }}
-    steps:
-
   #=======================
-  connect_debugger:
-    needs: [check_for_gateway]
-    if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
-    runs-on: aws-lager-runner
-    container:
-      image: docker://lagerdata/lager-cli
-      env:
-        LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
-        LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
-    steps:
-
-  #======================  
-  flash_sam4s:
-    runs-on: aws-lager-runner
-    container:
-      image: docker://lagerdata/lager-cli
-      env:
-        LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
-        LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
-
-    needs: [get_build_name_with_sha, connect_debugger, build]
+  upload_to_gdrive:
+    needs: [ build, get_build_name_with_sha ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
 
   #=======================
@@ -87,13 +53,11 @@ jobs:
     if: ${{ needs.check_for_gateway.outputs.is_online != 'false' }}
     steps:
 
-  #=======================
-  ota_release:
-    needs: [build, get_build_name_with_sha]
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    uses: ./.github/workflows/ota.yaml
-    with:
-      version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+  #=========================
+  host_unit_test:
+    needs: [get_build_name_with_sha, build]
+    runs-on: ubuntu-latest
+    steps:
 
   #=======================
   symbol_upload:
@@ -103,14 +67,34 @@ jobs:
     with:
       version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
 
-  #=======================
-  upload_to_gdrive:
-    needs: [ build, get_build_name_with_sha ]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      id-token: 'write'
+  #======================  
+  flash_sam4s:
+    runs-on: aws-lager-runner
+    container:
+      image: docker://lagerdata/lager-cli
+      env:
+        LAGER_TOKEN_ID: ${{ secrets.LAGER_TOKEN_ID }}
+        LAGER_TOKEN_SECRET: ${{ secrets.LAGER_TOKEN_SECRET }}
+
+    needs: [get_build_name_with_sha, connect_debugger, build]
     steps:
+
+
+
+
+
+
+
+
+  #=======================
+  ota_release:
+    needs: [build, get_build_name_with_sha]
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    uses: ./.github/workflows/ota.yaml
+    with:
+      version: ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+
+
 
   #=======================
   publish_failures_to_slack:
