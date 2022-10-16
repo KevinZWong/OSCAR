@@ -15,7 +15,7 @@ jobs:
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: docker build csharp
       run: |
-        docker build ./c# -t guowong/csharp:1.0.0
+        docker build ./csharp -t guowong/csharp:1.0.0
     - name: docker build nodejs
       run: |
         docker build ./nodejs -t guowong/nodejs:1.0.0
