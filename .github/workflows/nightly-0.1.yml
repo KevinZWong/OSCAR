@@ -48,11 +48,11 @@ jobs:
 
       - name: PRINT-OUT results
         run: |
-          ls -al
-          pwd
-          echo $SHELL
-          uname -a
-          cat /etc/os-release
+          ls -al                                        # ...  -rw-r--r-- 1 runner docker   49 Oct 16 04:24 version.def   ...
+          pwd                                           # /home/runner/work/OSCAR/OSCAR
+          echo $SHELL                                   # /bin/bash
+          uname -a    # Linux fv-az186-171 5.15.0-1021-azure #26~20.04.1-Ubuntu SMP Fri Sep 23 16:58:44 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+          cat /etc/os-release                           # ... VERSION="20.04.5 LTS (Focal Fossa)" ...
 
           echo ${{secrets.MACHINE_ACCESS_TOKEN}}        # ***
           echo "${{ secrets.MACHINE_ACCESS_TOKEN }}"    # ***
@@ -65,34 +65,34 @@ jobs:
           echo "$env.LAGER_GATEWAY"                     # .LAGER_GATEWAY
           echo "$LAGER_GATEWAY"                         # ***
 
-          echo ${{secrets.GUO_ENV_VAR1}}                # guo
-          echo ${{ env.GUO_ENV_VAR1 }}
-          echo "${{ env.GUO_ENV_VAR1 }}"
-          echo "$env.GUO_ENV_VAR1"
-          echo "$GUO_ENV_VAR1"
+          echo ${{secrets.GUO_ENV_VAR1}}                # (EMPTY)
+          echo ${{ env.GUO_ENV_VAR1 }}                  # guo
+          echo "${{ env.GUO_ENV_VAR1 }}"                # guo
+          echo "$env.GUO_ENV_VAR1"                      # .GUO_ENV_VAR1
+          echo "$GUO_ENV_VAR1"                          # guo
 
-          echo "GITHUB_ACTION:  ${GITHUB_ACTION}"
+          echo "GITHUB_ACTION:  ${GITHUB_ACTION}"       # GITHUB_ACTION:  __run
 
-          echo "HOME:  ${HOME}"
-          echo "GITHUB_WORKSPACE:  ${GITHUB_WORKSPACE}"
-          echo "GITHUB_ACTIONS:  ${GITHUB_ACTIONS}"
+          echo "HOME:  ${HOME}"                         # HOME:  /home/runner
+          echo "GITHUB_WORKSPACE:  ${GITHUB_WORKSPACE}" # GITHUB_WORKSPACE:  /home/runner/work/OSCAR/OSCAR
+          echo "GITHUB_ACTIONS:  ${GITHUB_ACTIONS}"     # GITHUB_ACTIONS:  true
 
-          echo "GITHUB_API_URL:  ${GITHUB_API_URL}"
-          echo "GITHUB_EVENT_PATH:  ${GITHUB_EVENT_PATH}"
-          echo "GITHUB_JOB:  ${GITHUB_JOB}"
+          echo "GITHUB_API_URL:  ${GITHUB_API_URL}"     # GITHUB_API_URL:  https://api.github.com
+          echo "GITHUB_EVENT_PATH:  ${GITHUB_EVENT_PATH}"   # GITHUB_EVENT_PATH:  /home/runner/work/_temp/_github_workflow/event.json
+          echo "GITHUB_JOB:  ${GITHUB_JOB}"             # GITHUB_JOB:  get_build_name_with_sha
 
-          echo "GITHUB_REPOSITORY:  ${GITHUB_REPOSITORY}"
-          echo "GITHUB_SHA:  ${GITHUB_SHA}"
-          echo "RUNNER_OS:  ${RUNNER_OS}"
+          echo "GITHUB_REPOSITORY:  ${GITHUB_REPOSITORY}" # GITHUB_REPOSITORY:  KevinZWong/OSCAR
+          echo "GITHUB_SHA:  ${GITHUB_SHA}"             # GITHUB_SHA:  6bec57ab8aab5fa723589861fc056d55ad63d719
+          echo "RUNNER_OS:  ${RUNNER_OS}"               # RUNNER_OS:  Linux
 
 
-          echo ${VERSION_MAJOR}
-          echo ${VERSION_MINOR}
-          echo ${VERSION_FLAVOR}
-          echo ${{ steps.get_ver_prefix.outputs.ver_prefix }}
-          echo ${{ env.BUILD_RUN_NUMBER }}
-          echo ${{ steps.get_git_sha.outputs.git_sha }}
-          echo ${{ steps.get_ver_prefix.outputs.ver_prefix }}${{ env.BUILD_RUN_NUMBER }}_${{ steps.get_git_sha.outputs.git_sha }}
+          echo ${VERSION_MAJOR}                         # 0
+          echo ${VERSION_MINOR}                         # 12
+          echo ${VERSION_FLAVOR}                        # d
+          echo ${{ steps.get_ver_prefix.outputs.ver_prefix }} # 0.12d
+          echo ${{ env.BUILD_RUN_NUMBER }}              # 24
+          echo ${{ steps.get_git_sha.outputs.git_sha }} # 6bec57ab
+          echo ${{ steps.get_ver_prefix.outputs.ver_prefix }}${{ env.BUILD_RUN_NUMBER }}_${{ steps.get_git_sha.outputs.git_sha }}  # 0.12d24_6bec57ab
 
       - name: Testing Secrets
         run: | 
