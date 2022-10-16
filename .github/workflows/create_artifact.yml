@@ -33,7 +33,7 @@ jobs:
       - name: Step 4 - less-is-more testing
         uses: caponetto/less-is-more@v1
         with:
-          released_artifact_name: assets-for-download
+          released_artifact_name: "assets-for-download"
           artifact_path: downloads
           max_increase_percentage: 10
           #github_token: ${{ secrets.MY_TOKEN }}
