@@ -13,6 +13,17 @@ env:
 
 
 jobs:
+  # The goal of this job is to get the output:  0.12d17_05c88891
+  # or ${VERSION_MAJOR}.${VERSION_MINOR}${VERSION_FLAVOR}${{ env.BUILD_RUN_NUMBER }}_${{ steps.get_git_sha.outputs.git_sha }}
+  #   ${VERSION_MAJOR}.${VERSION_MINOR}${VERSION_FLAVOR} got from version.def file  => 0.12d
+  #   ${{ env.BUILD_RUN_NUMBER }} got from ${{ github.run_number }}  => 17
+  #   ${{ steps.get_git_sha.outputs.git_sha }} got from  - id: get_git_sha    => 05c88891
+  #
+  #   How to get the output of this job?
+  #   1. needs: [get_build_name_with_sha]
+  #   2. In this other jobs's steps:
+  #           - run: echo ${{ needs.get_build_name_with_sha.outputs.BUILD_NAME_WITH_SHA }}
+  #
   get_build_name_with_sha:
     runs-on: ubuntu-latest
     outputs:
@@ -38,9 +49,12 @@ jobs:
         run: |
           ls -al
           pwd
+          echo $SHELL
+          uname -a
           echo ${{secrets.MACHINE_ACCESS_TOKEN}}
           echo ${{secrets.LAGER_GATEWAY}}
           echo ${{ env.LAGER_GATEWAY }}
+          echo "${{ env.LAGER_GATEWAY }}"
           echo ${VERSION_MAJOR}
           echo ${VERSION_MINOR}
           echo ${VERSION_FLAVOR}
@@ -48,6 +62,12 @@ jobs:
           echo ${{ env.BUILD_RUN_NUMBER }}
           echo ${{ steps.get_git_sha.outputs.git_sha }}
           echo ${{ steps.get_ver_prefix.outputs.ver_prefix }}${{ env.BUILD_RUN_NUMBER }}_${{ steps.get_git_sha.outputs.git_sha }}
+
+      - name: Testing Secrets
+        run: | 
+          echo "$DEVOPS"
+        env:
+          DEVOPS: ${{ secrets.SECRETS_TOKEN }}
 
   build:
     needs: [get_build_name_with_sha]
