@@ -19,12 +19,14 @@ jobs:
       BUILD_NAME_WITH_SHA: ${{ steps.get_ver_prefix.outputs.ver_prefix }}${{ env.BUILD_RUN_NUMBER }}_${{ steps.get_git_sha.outputs.git_sha }}
     steps:
       - name: Checkout the code (shallow)
-        run: |
-          echo "more details......"
-
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
 
       - name: parse version.def
-        run: echo "more details......"
+        uses: c-py/action-dotenv-to-setenv@v2
+        with:
+          env-file: ./version.def
 
       - id: get_ver_prefix
         run: echo "::set-output name=ver_prefix::${VERSION_MAJOR}.${VERSION_MINOR}${VERSION_FLAVOR}"
@@ -34,6 +36,9 @@ jobs:
 
       - name: PRINT-OUT results
         run: |
+          echo ${VERSION_MAJOR}
+          echo ${VERSION_MINOR}
+          echo ${VERSION_FLAVOR}
           echo ${{ steps.get_ver_prefix.outputs.ver_prefix }}
           echo ${{ env.BUILD_RUN_NUMBER }}
           echo ${{ steps.get_git_sha.outputs.git_sha }}
