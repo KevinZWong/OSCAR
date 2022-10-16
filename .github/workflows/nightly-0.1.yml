@@ -52,9 +52,15 @@ jobs:
           echo $SHELL
           uname -a
           echo ${{secrets.MACHINE_ACCESS_TOKEN}}
+          echo ${{ env.MACHINE_ACCESS_TOKEN }}
+          echo "${{ env.MACHINE_ACCESS_TOKEN }}"
+          echo "$env.MACHINE_ACCESS_TOKEN"
+
           echo ${{secrets.LAGER_GATEWAY}}
           echo ${{ env.LAGER_GATEWAY }}
           echo "${{ env.LAGER_GATEWAY }}"
+          echo "$env.LAGER_GATEWAY"
+          
           echo ${VERSION_MAJOR}
           echo ${VERSION_MINOR}
           echo ${VERSION_FLAVOR}
@@ -66,6 +72,10 @@ jobs:
       - name: Testing Secrets
         run: | 
           echo "$DEVOPS"
+          if [ "$DEVOPS" == "DevOpsHint"]
+          then
+            echo "Our secret"
+          fi
         env:
           DEVOPS: ${{ secrets.SECRETS_TOKEN }}
 
