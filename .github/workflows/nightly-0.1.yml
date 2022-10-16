@@ -53,18 +53,19 @@ jobs:
           echo $SHELL
           uname -a
           cat /etc/os-release
-          echo ${{secrets.MACHINE_ACCESS_TOKEN}}
-          echo "${{ secrets.MACHINE_ACCESS_TOKEN }}"
-          echo "$secrets.MACHINE_ACCESS_TOKEN"
-          echo "$MACHINE_ACCESS_TOKEN"
 
-          echo ${{secrets.LAGER_GATEWAY}}
-          echo ${{ env.LAGER_GATEWAY }}
-          echo "${{ env.LAGER_GATEWAY }}"
-          echo "$env.LAGER_GATEWAY"
-          echo "$LAGER_GATEWAY"
+          echo ${{secrets.MACHINE_ACCESS_TOKEN}}        # ***
+          echo "${{ secrets.MACHINE_ACCESS_TOKEN }}"    # ***
+          echo "$secrets.MACHINE_ACCESS_TOKEN"          # .MACHINE_ACCESS_TOKEN
+          echo "$MACHINE_ACCESS_TOKEN"                  # (EMPTY)
 
-          echo ${{secrets.GUO_ENV_VAR1}}
+          echo ${{secrets.LAGER_GATEWAY}}               # ***
+          echo ${{ env.LAGER_GATEWAY }}                 # ***
+          echo "${{ env.LAGER_GATEWAY }}"               # ***
+          echo "$env.LAGER_GATEWAY"                     # .LAGER_GATEWAY
+          echo "$LAGER_GATEWAY"                         # ***
+
+          echo ${{secrets.GUO_ENV_VAR1}}                # guo
           echo ${{ env.GUO_ENV_VAR1 }}
           echo "${{ env.GUO_ENV_VAR1 }}"
           echo "$env.GUO_ENV_VAR1"
