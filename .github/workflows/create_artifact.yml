@@ -19,8 +19,13 @@ jobs:
           name: assets-for-download
       
       - name: Test artifact download
-        run: ls -R
-
+        run: |
+          pwd
+          ls -al
+          ls -R
+          cat adpha.html
+          cat bravo.html
+          cat charlie.html
         
   archive-build-artifacts:
     runs-on: ubuntu-latest
@@ -31,9 +36,9 @@ jobs:
       - name: step 2 - Add artifacts to publish to the temp folder
         run: |
           cd downloads
-            echo "alpha 12345+123" > adpha.html
-            echo "bravo 12345+123" > bravo.html
-            echo "charlie 12345+123" > charlie.html
+            echo "alpha 12345+123+12" > adpha.html
+            echo "bravo 12345+123+12" > bravo.html
+            echo "charlie 12345+123+12" > charlie.html
             cd ..
 
       - name: Step 3 - Use the Upload Artitact Github Action
