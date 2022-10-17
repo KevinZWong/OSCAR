@@ -68,9 +68,9 @@ jobs:
       
       - name: add more data into files
         run: |
-            echo "alpha 12345+123" > adpha.html
-            echo "bravo 12345+123" > bravo.html
-            echo "charlie 12345+123" > charlie.html
+            echo "alpha 12345+123" >> adpha.html
+            echo "bravo 12345+123" >> bravo.html
+            echo "charlie 12345+123" >> charlie.html
 
       - name: create folder and move files over
         run: |
