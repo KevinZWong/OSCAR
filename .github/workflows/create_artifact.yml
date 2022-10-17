@@ -10,6 +10,18 @@ on:
   workflow_dispatch:
 
 jobs:
+  get-previous-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: assets-for-download
+      
+      - name: Test artifact download
+        run: ls -R
+
+        
   archive-build-artifacts:
     runs-on: ubuntu-latest
     steps:
@@ -19,9 +31,9 @@ jobs:
       - name: step 2 - Add artifacts to publish to the temp folder
         run: |
           cd downloads
-            echo "alpha 12345" > adpha.html
-            echo "bravo 12345" > bravo.html
-            echo "charlie 12345" > charlie.html
+            echo "alpha 12345+123" > adpha.html
+            echo "bravo 12345+123" > bravo.html
+            echo "charlie 12345+123" > charlie.html
             cd ..
 
       - name: Step 3 - Use the Upload Artitact Github Action
@@ -37,4 +49,5 @@ jobs:
       #    artifact_path: downloads
       #    max_increase_percentage: 10
       #    #github_token: ${{ secrets.MY_TOKEN }}
+  
   
