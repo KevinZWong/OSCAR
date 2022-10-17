@@ -75,8 +75,8 @@ jobs:
     steps:
       - name: using env variable
         run: |
-          echo ${{ GUO }}
-          echo ${{ WONG }}
+          echo ${{ env.GUO }}
+          echo ${{ env.WONG }}
 
       - name: changing env varible
         run: |
@@ -85,5 +85,5 @@ jobs:
 
       - name: print env variable
         run: |
-          echo ${{ GUO }}
-          echo ${{ WONG }}
+          echo ${{ env.GUO }}
+          echo ${{ env.WONG }}
