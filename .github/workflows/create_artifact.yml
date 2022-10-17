@@ -19,9 +19,9 @@ jobs:
       - name: step 2 - Add artifacts to publish to the temp folder
         run: |
           cd downloads
-            echo "alpha 12345+123+12" > adpha.html
-            echo "bravo 12345+123+12" > bravo.html
-            echo "charlie 12345+123+12" > charlie.html
+            echo "alpha 12345" > adpha.html
+            echo "bravo 12345" > bravo.html
+            echo "charlie 12345" > charlie.html
             cd ..
 
       - name: Step 3 - Use the Upload Artitact Github Action
@@ -29,6 +29,15 @@ jobs:
         with:
           name: assets-for-download
           path: downloads
+
+      - name: Check files and folder
+        run: |
+          pwd
+          ls -al
+          ls -R
+          cat ./downloads/adpha.html
+          cat ./downloads/bravo.html
+          cat ./downloads/charlie.html
 
       #- name: Step 4 - less-is-more testing
       #  uses: caponetto/less-is-more@v1
@@ -41,6 +50,47 @@ jobs:
   
   get-previous-artifact:
     needs: [archive-build-artifacts]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: assets-for-download
+      
+      - name: Test artifact download
+        run: |
+          pwd
+          ls -al
+          ls -R
+          cat adpha.html
+          cat bravo.html
+          cat charlie.html
+      
+      - name: add more data into files
+        run: |
+            echo "alpha 12345+123" > adpha.html
+            echo "bravo 12345+123" > bravo.html
+            echo "charlie 12345+123" > charlie.html
+
+      - name: create folder and move files over
+        run: |
+          mkdir downloads
+          mv adpha.html ./downloads/adpha.html
+          mv adpha.html ./downloads/adpha.html
+          mv adpha.html ./downloads/adpha.html
+          pwd
+          ls -al
+          ls -R
+
+      - name: Step 3 - Use the Upload Artitact Github Action
+        uses: actions/upload-artifact@v2
+        with:
+          name: assets-for-download
+          path: downloads
+
+  
+  get-previous-artifact2:
+    needs: [get-previous-artifact]
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
