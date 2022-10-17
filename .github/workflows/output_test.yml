@@ -80,8 +80,8 @@ jobs:
 
       - name: changing env varible
         run: |
-          GUO=guo123
-          WONG=wong123
+          env.GUO=guo123
+          env.WONG=wong123
 
       - name: print env variable
         run: |
