@@ -10,25 +10,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  get-previous-artifact:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: assets-for-download
-      
-      - name: Test artifact download
-        run: |
-          pwd
-          ls -al
-          ls -R
-          cat adpha.html
-          cat bravo.html
-          cat charlie.html
+
         
   archive-build-artifacts:
-    needs: [get-previous-artifact]
     runs-on: ubuntu-latest
     steps:
       - name: Step 1 - Create a temporary artifact download folder
@@ -57,3 +41,20 @@ jobs:
       #    #github_token: ${{ secrets.MY_TOKEN }}
   
   
+    get-previous-artifact:
+    needs: [archive-build-artifacts]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: assets-for-download
+      
+      - name: Test artifact download
+        run: |
+          pwd
+          ls -al
+          ls -R
+          cat adpha.html
+          cat bravo.html
+          cat charlie.html
