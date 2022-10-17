@@ -28,6 +28,7 @@ jobs:
           cat charlie.html
         
   archive-build-artifacts:
+    needs: [get-previous-artifact]
     runs-on: ubuntu-latest
     steps:
       - name: Step 1 - Create a temporary artifact download folder
