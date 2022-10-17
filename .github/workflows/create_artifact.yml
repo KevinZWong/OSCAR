@@ -76,8 +76,8 @@ jobs:
         run: |
           mkdir downloads
           mv adpha.html ./downloads/adpha.html
-          mv adpha.html ./downloads/adpha.html
-          mv adpha.html ./downloads/adpha.html
+          mv bravo.html ./downloads/bravo.html
+          mv charlie.html ./downloads/charlie.html
           pwd
           ls -al
           ls -R
