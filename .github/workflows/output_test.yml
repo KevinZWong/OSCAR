@@ -29,3 +29,26 @@ jobs:
     needs: job1
     steps:
       - run: echo ${{needs.job1.outputs.output1}} ${{needs.job1.outputs.output2}} ${{needs.job1.outputs.output3}} 
+
+  job3:
+    runs-on: ubuntu-latest
+    steps:
+      - run: export FOO=bar
+
+      - run: echo $FOO
+
+  job4:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          export FOO=bar
+          echo "::set-env name=FOO::$FOO"
+
+      - run: echo $FOO
+
+  job5:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+        export FOO=bar
+        echo $FOO
