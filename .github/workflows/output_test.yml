@@ -50,5 +50,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-        export FOO=bar
-        echo $FOO
+          export FOO=bar
+          echo $FOO
