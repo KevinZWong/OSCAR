@@ -65,3 +65,25 @@ jobs:
         id: step_two
         run: |
           echo "${{ env.action_state }}" # This will output 'yellow'
+
+
+  job7:
+    runs-on: ubuntu-latest
+    env:
+      GUO: guo
+      WONG: wong
+    steps:
+      - name: using env variable
+        run: |
+          echo ${{ GUO }}
+          echo ${{ WONG }}
+
+      - name: changing env varible
+        run: |
+          GUO=guo123
+          WONG=wong123
+
+      - name: print env variable
+        run: |
+          echo ${{ GUO }}
+          echo ${{ WONG }}
