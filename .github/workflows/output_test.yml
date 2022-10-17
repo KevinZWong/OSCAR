@@ -1,6 +1,7 @@
 name: Output_Test
 
-on: [push]
+on: 
+  push:
 
   workflow_dispatch:
 
