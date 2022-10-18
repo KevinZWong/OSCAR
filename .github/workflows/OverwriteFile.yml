@@ -18,6 +18,7 @@ jobs:
           ls -l
           echo "guo12345" >> guo1.txt
           ls -l
+          env
 
       - name: Set Random Number
         id: set_random_num
