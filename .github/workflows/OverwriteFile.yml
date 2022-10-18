@@ -2,7 +2,6 @@ name: Overwrite some file
 
 on:
   push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -19,6 +18,9 @@ jobs:
           echo "guo12345" >> guo1.txt
           ls -l
           env
+          echo ${{ env.GITHUB_REF_NAME }}
+          echo ${{ GITHUB_REF_NAME }}
+
 
       - name: Set Random Number
         id: set_random_num
@@ -42,6 +44,6 @@ jobs:
         uses: Andro999b/push@v1.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.GITHUB_REF_NAME }}
+          branch: ${{ GITHUB_REF_NAME }}
           force: true
           message: 'Overwritten by Github Actions - ${date}'
