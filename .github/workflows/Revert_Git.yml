@@ -12,7 +12,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: checking
         run: |
@@ -38,13 +38,13 @@ jobs:
 
       - name: Revert Head back
         run: |
-          #git reset --hard HEAD~1
-          git reset --hard ${{ github.event.before }}
+          git reset --hard HEAD~1
+          #git reset --hard ${{ github.event.before }}
           git status
           git log
 
       - name: Back to Original
         run: |
-          #git reset --hard "$GITHUB_SHA"
+          git reset --hard "$GITHUB_SHA"
           git status
           git log
