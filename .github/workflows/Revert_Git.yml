@@ -1,0 +1,34 @@
+name: Revert Git Test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: checking
+        run: |
+          echo "Test PR#2"
+          pwd
+          ls -l
+          git status
+          git log
+          env
+
+      - name: Revert Head back
+        run: |
+          git reset --hard HEAD~1
+          git status
+          git log
+
+      - name: Back to Original
+        run: |
+          git reset --hard "$GITHUB_SHA"
+          git status
+          git log
