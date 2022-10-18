@@ -37,6 +37,7 @@ jobs:
       - name: Revert Head back
         run: |
           #git reset --hard HEAD~1
+          git reset --hard ${{ github.event.before }}
           git status
           git log
 
