@@ -22,10 +22,11 @@ jobs:
       - name: Set Random Number
         id: set_random_num
         run: |
-          randomNum=$RANDOM
-          echo "randomNumA: $randomNum"
+          randomNumA=$RANDOM
+          randomNumB=$RANDOM
+          echo "randomNumA: $randomNumA"
           echo "random_numA=$randomNumA" >> $GITHUB_ENV
-          echo "randomNumB: $randomNum"
+          echo "randomNumB: $randomNumB"
           echo "random_numB=$randomNumB" >> $GITHUB_ENV
 
       - name: Overwrite file
@@ -34,8 +35,7 @@ jobs:
           path: guo1.txt
           write-mode: overwrite
           contents: |
-            ${{ env.random_numA}}
-            ${{ env.random_numA}}
+            ${{ env.random_numA}}  ${{ env.random_numA}}
             
       - name: Commit & Push
         uses: Andro999b/push@v1.3
