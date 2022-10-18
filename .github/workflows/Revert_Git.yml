@@ -21,14 +21,21 @@ jobs:
           git log
           env
 
+      - name: checking - 2
+        run: |
+          git status
+          git log
+          git reflong
+        
+
       - name: Revert Head back
         run: |
-          git reset --hard HEAD~1
+          #git reset --hard HEAD~1
           git status
           git log
 
       - name: Back to Original
         run: |
-          git reset --hard "$GITHUB_SHA"
+          #git reset --hard "$GITHUB_SHA"
           git status
           git log
