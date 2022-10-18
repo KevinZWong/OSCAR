@@ -13,6 +13,7 @@ jobs:
 
       - name: checking
         run: |
+          echo "Test PR#1"
           pwd
           ls -l
           echo "guo12345" >> guo1.txt
