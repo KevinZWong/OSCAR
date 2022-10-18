@@ -33,6 +33,8 @@ jobs:
           echo "GITHUB_WORKSPACE:  ${GITHUB_WORKSPACE}"
           echo "GITHUB_REF_NAME:  ${GITHUB_REF_NAME}"
 
+          echo "branch_name=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
         with:
@@ -45,6 +47,6 @@ jobs:
         uses: Andro999b/push@v1.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: "${GITHUB_REF_NAME}"
+          branch: ${{ env.branch_name }}
           force: true
           message: 'Overwritten by Github Actions - ${date}'
