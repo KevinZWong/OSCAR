@@ -35,7 +35,7 @@ jobs:
           path: guo1.txt
           write-mode: overwrite
           contents: |
-            ${{ env.random_numA}}  ${{ env.random_numA}}
+            ${{ env.random_numA}}  ${{ env.random_numB}}
             
       - name: Commit & Push
         uses: Andro999b/push@v1.3
