@@ -23,8 +23,10 @@ jobs:
         id: set_random_num
         run: |
           randomNum=$RANDOM
-          echo "randomNum: $randomNum"
-          echo "random_num=$randomNum" >> $GITHUB_ENV
+          echo "randomNumA: $randomNum"
+          echo "random_numA=$randomNumA" >> $GITHUB_ENV
+          echo "randomNumB: $randomNum"
+          echo "random_numB=$randomNumB" >> $GITHUB_ENV
 
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
@@ -32,7 +34,8 @@ jobs:
           path: guo1.txt
           write-mode: overwrite
           contents: |
-            ${{ env.random_num}}
+            ${{ env.random_numA}}
+            ${{ env.random_numA}}
             
       - name: Commit & Push
         uses: Andro999b/push@v1.3
