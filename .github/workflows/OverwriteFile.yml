@@ -17,6 +17,14 @@ jobs:
           pwd
           ls -l
           echo "guo12345" >> guo1.txt
+          ls -l
+
+      - name: Set Random Number
+        id: set_random_num
+        run: |
+          randomNum=$RANDOM
+          echo "randomNum: $randomNum"
+          echo "random_num=$randomNum" >> $GITHUB_ENV
 
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
@@ -24,7 +32,7 @@ jobs:
           path: guo1.txt
           write-mode: overwrite
           contents: |
-            console.log('some contents')
+            ${{ env.random_num}}
             
       - name: Commit & Push
         uses: Andro999b/push@v1.3
