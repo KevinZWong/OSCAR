@@ -18,7 +18,7 @@ jobs:
           echo "guo12345" >> guo1.txt
           ls -l
           env
-          echo ${{ env.GITHUB_REF_NAME }}
+
 
 
       - name: Set Random Number
@@ -30,6 +30,8 @@ jobs:
           echo "random_numA=$randomNumA" >> $GITHUB_ENV
           echo "randomNumB: $randomNumB"
           echo "random_numB=$randomNumB" >> $GITHUB_ENV
+          echo "GITHUB_WORKSPACE:  ${GITHUB_WORKSPACE}"
+          echo "GITHUB_REF_NAME:  ${GITHUB_REF_NAME}"
 
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
@@ -43,6 +45,6 @@ jobs:
         uses: Andro999b/push@v1.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.GITHUB_REF_NAME }}
+          branch: fw-2123
           force: true
           message: 'Overwritten by Github Actions - ${date}'
