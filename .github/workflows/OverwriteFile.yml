@@ -13,6 +13,7 @@ jobs:
 
       - name: checking
         run: |
+          echo "Test PR#1"
           pwd
           ls -l
           echo "guo12345" >> guo1.txt
@@ -41,7 +42,7 @@ jobs:
           path: guo1.txt
           write-mode: overwrite
           contents: |
-            fileA:${{ env.random_numA}}  fileb:${{ env.random_numB}}
+            fileA:${{ env.random_numA}}  fileB:${{ env.random_numB}}
             
       - name: Commit & Push
         uses: Andro999b/push@v1.3
