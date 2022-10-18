@@ -2,7 +2,7 @@ name: Overwrite some file
 
 on:
   push:
-  push_request:
+  pull_request:
   workflow_dispatch:
 
 jobs:
