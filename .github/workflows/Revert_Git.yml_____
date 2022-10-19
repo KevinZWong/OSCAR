@@ -36,6 +36,7 @@ jobs:
           echo ${{ github.event.before }}
           echo "GITHUB_SHA:  ${GITHUB_SHA}"  
           cat ./test1
+          a_filesize=$(wc -c oscar_controls_app/oscar_controls_app-A.bin | awk '{print $1}')
 
       - name: Revert Head back
         run: |
