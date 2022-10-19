@@ -124,7 +124,8 @@ jobs:
       - name: The imageA Size Difference of this change is 
         run: |
           sizeDiff_A=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} ))
-          echo "Image A Size DIfference = ${sizeDiff_A}"   
+          echo "Image A Size Difference = ${sizeDiff_A}"   
+
       - name: Before this change ImageB size was ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}
         run: echo "Previous Image B Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} "
 
@@ -134,4 +135,4 @@ jobs:
       - name: The imageB Size Difference of this change is 
         run: |
           sizeDiff_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} ))
-          echo "Image B Size DIfference = ${sizeDiff_B}"   
+          echo "Image B Size Difference = ${sizeDiff_B}"   
