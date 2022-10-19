@@ -47,8 +47,8 @@ jobs:
       - name: sum up
         run: |
           sum1=$((${{needs.job1.outputs.output2}} + ${{needs.job1.outputs.output3}}))
-          echo $sum1
-          echo ${{needs.job1.outputs.output2}}
-          echo ${{needs.job1.outputs.output3}}
+          echo "The Sum = $sum1"
+          echo "Number1 = ${{needs.job1.outputs.output2}}"
+          echo "Number2 = ${{needs.job1.outputs.output3}}"
 
 
