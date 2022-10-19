@@ -1,0 +1,137 @@
+name: Check Firmware Size
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  BUILD_RUN_NUMBER: ${{ github.run_number }}
+
+jobs:
+  curBuild:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: docker://chewielabs/devenv:version-1.6
+    #   credentials:
+    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #     password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    outputs:
+      CUR_BUILD_IMAGE_A: ${{ steps.get_cur_imageA.outputs.imageA }}
+      CUR_BUILD_IMAGE_B: ${{ steps.get_cur_imageB.outputs.imageB }}
+    steps:
+      # - name: work around permission issue, GitHub Actions #760
+      #   run: git config --global --add safe.directory /__w/Oscar/Oscar
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        with:
+          # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          # submodules: recursive
+          fetch-depth: 3
+
+      # - name: Build Firmwares
+      #   run: make all  -j16
+
+      - name: testing
+        run: |
+          pwd
+          mkdir sam4s/; cd sam4s/
+          mkdir cli_app/; cd cli_app/
+          mkdir build-evt-debug/; cd build-evt-debug/
+          echo "guo123-Added" > ./oscar_controls_app-A.bin
+          echo "wong456-Added" > ./oscar_controls_app-B.bin
+          cd ../../..
+          ls -al sam4s/cli_app/build-evt-debug/
+
+      - id: get_cur_imageA
+        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')"
+
+      - id: get_cur_imageB
+        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')"
+     
+      - name: get build-evt-debug fw size
+        run: |
+          fsizeA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')
+          echo "$fsizeA"
+          fsizeB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')
+          echo "$fsizeB"
+          sizeDiff=$((fsizeA - fsizeB))
+          echo $sizeDiff
+
+  prevBuild:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: docker://chewielabs/devenv:version-1.6
+    #   credentials:
+    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #     password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    outputs:
+      PREV_BUILD_IMAGE_A: ${{ steps.get_prev_imageA.outputs.imageA }}
+      PREV_BUILD_IMAGE_B: ${{ steps.get_prev_imageB.outputs.imageB }}
+    steps:
+      # - name: work around permission issue, GitHub Actions #760
+      #   run: git config --global --add safe.directory /__w/Oscar/Oscar
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        with:
+          # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          # submodules: recursive
+          fetch-depth: 3
+
+      - name: Build Firmwares
+        run: |
+          git reset --hard HEAD~1
+          sleep 1
+          # make all  -j16
+
+      - name: testing
+        run: |
+          pwd
+          mkdir sam4s/; cd sam4s/
+          mkdir cli_app/; cd cli_app/
+          mkdir build-evt-debug/; cd build-evt-debug/
+          echo "guo123" > ./oscar_controls_app-A.bin
+          echo "wong456" > ./oscar_controls_app-B.bin
+          cd ../../..
+          ls -al sam4s/cli_app/build-evt-debug/
+
+      - id: get_prev_imageA
+        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')"
+      - id: get_prev_imageB
+        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')"
+     
+      - name: get previous build-evt-debug fw size
+        run: |
+          fsizeA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')
+          echo "$fsizeA"
+          fsizeB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')
+          echo "$fsizeB"
+          sizeDiff=$((fsizeA - fsizeB))
+          echo $sizeDiff
+
+
+  reportCombSizeResults:
+    needs: [curBuild, prevBuild]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Before this change ImageA size was ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}
+        run: echo "Previous Image A Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}"
+
+      - name: After this change ImageA size is ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}
+        run: echo "Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} "
+
+      - name: The imageA Size Difference of this change is 
+        run: |
+          sizeDiff_A=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} ))
+          echo "Image A Size DIfference = ${sizeDiff_A}"   
+      - name: Before this change ImageB size was ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}
+        run: echo "Previous Image B Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} "
+
+      - name: After this change ImageB size is ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}
+        run: echo "Current Image B Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}"
+
+      - name: The imageB Size Difference of this change is 
+        run: |
+          sizeDiff_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} ))
+          echo "Image B Size DIfference = ${sizeDiff_B}"   
