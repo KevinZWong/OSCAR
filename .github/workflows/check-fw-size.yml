@@ -44,10 +44,10 @@ jobs:
           ls -al sam4s/cli_app/build-evt-debug/
 
       - id: get_cur_imageA
-        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')"
+        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - id: get_cur_imageB
-        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')"
+        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
      
       - name: get build-evt-debug fw size
         run: |
@@ -97,9 +97,9 @@ jobs:
           ls -al sam4s/cli_app/build-evt-debug/
 
       - id: get_prev_imageA
-        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')"
+        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
       - id: get_prev_imageB
-        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')"
+        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
      
       - name: get previous build-evt-debug fw size
         run: |
