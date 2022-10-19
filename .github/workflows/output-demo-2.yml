@@ -29,10 +29,16 @@ jobs:
           echo "::set-output name=data::$contents"
 
       - id: number1
-        run: echo "::set-output name=num1::'123'"
+        run: |
+          aNum="123"
+          #echo "::set-output name=num1::$aNum"
+          echo "name=aNum" >> $GITHUB_OUTPUT
 
       - id: number2
-        run: echo "::set-output name=num2::'456'"
+        run: |
+          bNum="456"
+          #run: echo "::set-output name=num2::$bNum"
+          echo "name=bNum" >> $GITHUB_OUTPUT
 
   job2:
     runs-on: ubuntu-latest
