@@ -27,19 +27,19 @@ jobs:
           python create_txt_file.py
           contents=$( cat readme.txt )
           #echo "::set-output name=data::$contents"
-          echo "name=data::$contents"
+          echo "data=$contents"
 
       - id: number1
         run: |
           aNum="123"
           #echo "::set-output name=num1::$aNum"
-          echo "num1=aNum" >> $GITHUB_OUTPUT
+          echo "num1=$aNum" >> $GITHUB_OUTPUT
 
       - id: number2
         run: |
           bNum="456"
           #run: echo "::set-output name=num2::$bNum"
-          echo "num2=bNum" >> $GITHUB_OUTPUT
+          echo "num2=$bNum" >> $GITHUB_OUTPUT
 
   job2:
     runs-on: ubuntu-latest
