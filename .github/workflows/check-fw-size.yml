@@ -115,16 +115,32 @@ jobs:
     needs: [curBuild, prevBuild]
     runs-on: ubuntu-latest
     steps:
+      - name: Pre-calculation for differences
+        run: |
+          sizeDiff_A=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} ))
+          echo "sDiff_A=$sizeDiff_A" >> $GITHUB_ENV
+
+          sizeDiff_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} ))
+          echo "sDiff_B=$sizeDiff_B" >> $GITHUB_ENV
+
+          SizeDiff_prev_A_B=$(( ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} ))
+          echo "sDiff_prev_A_B=$SizeDiff_prev_A_B" >> $GITHUB_ENV
+
+          SizeDiff_cur_A_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} ))
+          echo "sDiff_cur_A_B=$SizeDiff_cur_A_B" >> $GITHUB_ENV
+
+
       - name: Before this change ImageA size was ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}
         run: echo "Previous Image A Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}"
 
       - name: After this change ImageA size is ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}
         run: echo "Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} "
 
-      - name: The imageA Size Difference of this change is 
+      - name: The imageA Size Difference of this change is ${{ env.sDiff_A }}
         run: |
-          sizeDiff_A=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} ))
-          echo "Image A Size Difference = ${sizeDiff_A}"   
+          #sizeDiff_A=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} ))
+          echo "Image A Size Difference = ${{ env.sDiff_A }}"
+
 
       - name: Before this change ImageB size was ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}
         run: echo "Previous Image B Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} "
@@ -132,7 +148,13 @@ jobs:
       - name: After this change ImageB size is ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}
         run: echo "Current Image B Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}"
 
-      - name: The imageB Size Difference of this change is 
+      - name: The imageB Size Difference of this change is ${{ env.sDiff_A }}
         run: |
-          sizeDiff_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} ))
-          echo "Image B Size Difference = ${sizeDiff_B}"   
+          #sizeDiff_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} ))
+          echo "Image B Size Difference = ${{ env.sDiff_A }}"   
+
+      - name: Before this change ImageA and ImageB Size Difference was ${{ env.sDiff_prev_A_B }}
+        run: echo "Before Image A and Image B Size Difference = ${{ env.sDiff_prev_A_B }}" 
+
+      - name: Currently this change ImageA and ImageB Size Difference is ${{ env.sDiff_cur_A_B }}
+        run: echo "Currently Image A and Image B Size Difference = ${{ env.sDiff_cur_A_B }}" 
