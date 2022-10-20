@@ -149,3 +149,9 @@ jobs:
 
       - name: Currently this change ImageA and ImageB Size Difference is ${{ env.sDiff_cur_A_B }}
         run: echo "Currently Image A and Image B Size Difference = ${{ env.sDiff_cur_A_B }}" 
+
+      - name: Publish unit tests results
+        uses: EnricoMi/publish-unit-test-result-action@v2.0.0
+        if: always()
+        with:
+          junit_files: ${{ github.workspace }}/report.xml
