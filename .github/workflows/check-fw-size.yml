@@ -171,9 +171,12 @@ jobs:
         if: always()
         with:
           junit_files: ${{ github.workspace }}/**/results.xml
-          check_name: "Image Size Checker Test => Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}  /
-            Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} /
-           Image A Size Difference =  ${{ env.sDiff_A }} and  Image A Size Difference = ${{ env.sDiff_B }} "
+          check_name: "Image Size Checker Test => \
+            Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}  \
+            Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} \
+            Image A Size Difference =  ${{ env.sDiff_A }} \
+            Previous Image B Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} \
+            Current Image B Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} \
+            Image A Size Difference = ${{ env.sDiff_B }} "
           #comment_title: "guo wong"
           ignore_runs: true
-          compare_to_earlier_commit: true
