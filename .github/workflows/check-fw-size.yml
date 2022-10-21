@@ -171,7 +171,7 @@ jobs:
         if: always()
         with:
           junit_files: ${{ github.workspace }}/**/results.xml
-          check_name: "Image Size Checker Test => \
+          check_name: "<p style="color:DodgerBlue;">Image Size Checker Test</p> \
             Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}  \
             Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} \
             Image A Size Difference =  ${{ env.sDiff_A }} \
