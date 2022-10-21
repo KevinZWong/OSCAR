@@ -148,8 +148,8 @@ jobs:
       - name: After this change ImageB size is ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}
         run: echo "Current Image B Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}"
 
-      - name: The imageB Size Difference of this change is ${{ env.sDiff_A }}
-        run: echo "Image B Size Difference = ${{ env.sDiff_A }}"   
+      - name: The imageB Size Difference of this change is ${{ env.sDiff_B }}
+        run: echo "Image B Size Difference = ${{ env.sDiff_B }}"   
 
       - name: Before this change ImageA and ImageB Size Difference was ${{ env.sDiff_prev_A_B }}
         run: echo "Before Image A and Image B Size Difference = ${{ env.sDiff_prev_A_B }}" 
@@ -171,7 +171,7 @@ jobs:
         if: always()
         with:
           junit_files: ${{ github.workspace }}/**/results.xml
-          check_name: "Image Size Checker Test"
+          check_name: "Image Size Checker Test => Image A Size Difference =  ${{ env.sDiff_A }} and  Image A Size Difference = ${{ env.sDiff_B }} "
           #comment_title: "guo wong"
           ignore_runs: true
-          compare_to_earlier_commit: false
+          compare_to_earlier_commit: true
