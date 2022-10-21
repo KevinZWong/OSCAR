@@ -171,7 +171,9 @@ jobs:
         if: always()
         with:
           junit_files: ${{ github.workspace }}/**/results.xml
-          check_name: "Image Size Checker Test => Image A Size Difference =  ${{ env.sDiff_A }} and  Image A Size Difference = ${{ env.sDiff_B }} "
+          check_name: "Image Size Checker Test => Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}  /
+            Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} /
+           Image A Size Difference =  ${{ env.sDiff_A }} and  Image A Size Difference = ${{ env.sDiff_B }} "
           #comment_title: "guo wong"
           ignore_runs: true
           compare_to_earlier_commit: true
