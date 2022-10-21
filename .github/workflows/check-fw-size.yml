@@ -174,3 +174,4 @@ jobs:
           check_name: "Image Size Checker Test"
           #comment_title: "guo wong"
           ignore_runs: true
+          compare_to_earlier_commit: false
