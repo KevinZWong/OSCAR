@@ -1,0 +1,33 @@
+
+<REPORT1_REPORT>
+   <REGION REGION="1">
+          <BRANCH BRANCH="01">  
+             <REPORT1>  
+                <DEPT>100</DEPT>    
+                <EMPLOYEE_NUMBER>12345</EMPLOYEE_NUMBER>    
+                <EMPLOYEE_NAME>JOHNNY  BGOOD       </EMPLOYEE_NAME> 
+             </REPORT1> 
+             <REPORT1>  
+                <DEPT>100</DEPT>    
+                <EMPLOYEE_NUMBER>12346</EMPLOYEE_NUMBER>    
+                <EMPLOYEE_NAME>CHUCK    ROCKS      </EMPLOYEE_NAME> 
+             </REPORT1> 
+          </BRANCH> 
+          <BRANCH BRANCH="02">  
+             <REPORT1>  
+                <DEPT>100</DEPT>    
+                <EMPLOYEE_NUMBER>99999</EMPLOYEE_NUMBER>    
+                <EMPLOYEE_NAME>JAMES    DEAN       </EMPLOYEE_NAME> 
+             </REPORT1> 
+          </BRANCH> 
+       </REGION>    
+       <REGION REGION="2">  
+          <BRANCH BRANCH="01">  
+             <REPORT1>  
+                <DEPT>150</DEPT>    
+                <EMPLOYEE_NUMBER>11111</EMPLOYEE_NUMBER>    
+                <EMPLOYEE_NAME>JIM      SHOE       </EMPLOYEE_NAME> 
+             </REPORT1> 
+          </BRANCH> 
+       </REGION>    
+</REPORT1_REPORT>
