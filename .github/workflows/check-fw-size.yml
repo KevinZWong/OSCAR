@@ -193,16 +193,15 @@ jobs:
           check_name: Image Size Checker - Test
           comment_title: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
             Image Size Checker - Test</h1> ${{env.emojiState}} 
-            <h5> image_size_without_this_pr_A = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} 
-            image_size_with_this_pr_A = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} 
+            <h5> image_size_without_this_pr_A = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
+            image_size_with_this_pr_A = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
             Image A Size Difference =  ${{ env.sDiff_A }} </h5>
 
-            <h5> image_size_without_this_pr_B = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} 
-            image_size_with_this_pr_B = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} 
+            <h5> image_size_without_this_pr_B = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
+            image_size_with_this_pr_B = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}   
             Image B Size Difference = ${{ env.sDiff_B }} </h5>
-
-            <h6> Above result are comparing current commit  ${{ needs.curBuild.outputs.CUR_SHA }}
-            vs. ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
+            <h6> Above result are comparing current commit  ${{ needs.curBuild.outputs.CUR_SHA }}   
+            vs ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
 
           #comment_title: "guo wong"
           #ignore_runs: true
