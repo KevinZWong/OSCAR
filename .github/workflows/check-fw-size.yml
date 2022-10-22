@@ -43,6 +43,7 @@ jobs:
           echo "wong456-Added" > ./oscar_controls_app-B.bin
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
+          echo "GITHUB_SHA:  ${GITHUB_SHA}"
 
       - id: get_cur_sha
         run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
@@ -100,11 +101,15 @@ jobs:
           echo "wong456" > ./oscar_controls_app-B.bin
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
+          echo "GITHUB_SHA:  ${GITHUB_SHA}" 
+          
 
       - id: get_prev_sha
         run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
       - id: get_prev_imageA
         run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+
       - id: get_prev_imageB
         run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
      
