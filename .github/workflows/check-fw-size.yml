@@ -45,7 +45,7 @@ jobs:
           ls -al sam4s/cli_app/build-evt-debug/
 
       - id: get_cur_sha
-        run: echo "sha=${GITHUB_SHA}"
+        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
 
       - id: get_cur_imageA
         run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
@@ -102,7 +102,7 @@ jobs:
           ls -al sam4s/cli_app/build-evt-debug/
 
       - id: get_prev_sha
-        run: echo "sha=${GITHUB_SHA}"
+        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
       - id: get_prev_imageA
         run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
       - id: get_prev_imageB
@@ -199,7 +199,7 @@ jobs:
             <h5> For B image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
             image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}   
             Delta = ${{ env.sDiff_B }} </h5>
-            <h6> Above result are comparing current commit  ${{ needs.curBuild.outputs.CUR_SHA }} vs ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
+            <h6> Above result are comparing current commit ${{ needs.curBuild.outputs.CUR_SHA }} vs ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
 
           #comment_title: "guo wong"
           #ignore_runs: true
