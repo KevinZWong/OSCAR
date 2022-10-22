@@ -101,11 +101,11 @@ jobs:
           echo "wong456" > ./oscar_controls_app-B.bin
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
-          echo "GITHUB_SHA:  ${GITHUB_SHA}" 
+          echo "PREVIOUS_SHA:  ${{ github.event.pull_request.base.sha }}" 
           
 
       - id: get_prev_sha
-        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+        run: echo "sha=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
 
       - id: get_prev_imageA
         run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
