@@ -102,7 +102,11 @@ jobs:
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
           echo "PREVIOUS_SHA:  ${{ github.event.pull_request.base.sha }}" 
-          
+          echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event.pull_request.base.sha }}
+          echo ${{ github.event.base_ref }}
+          echo ${{ github.event.before }}
+          git log -3
 
       - id: get_prev_sha
         run: echo "sha=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
