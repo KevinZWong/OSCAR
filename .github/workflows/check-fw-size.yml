@@ -132,8 +132,8 @@ jobs:
           echo "sDiff_prev_A_B=$SizeDiff_prev_A_B" >> $GITHUB_ENV
           SizeDiff_cur_A_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} ))
           echo "sDiff_cur_A_B=$SizeDiff_cur_A_B" >> $GITHUB_ENV
-
-          echo "emojiState='&#128512' >> $GITHUB_ENV
+          PASSED='&#128512'
+          echo "emojiState=$PASSED">> $GITHUB_ENV
 
 
       - name: Before this change ImageA size was ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}
