@@ -133,8 +133,13 @@ jobs:
           SizeDiff_cur_A_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} ))
           echo "sDiff_cur_A_B=$SizeDiff_cur_A_B" >> $GITHUB_ENV
           
-          PASSED='<p style="font-size:48px"> &#128512; &#128516; &#128516;</p>'
-          echo "emojiState=$PASSED">> $GITHUB_ENV
+          NOCHANGE='<p style="font-size:72px"> &#128512; &#128516; &#128516; &#128512; &#128516; &#128516; &#128512; &#128516; </p>'
+          NEEDINQUIRY='<p style="font-size:72px"> &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; </p>'
+          if [ 0 ]
+            echo "emojiState=$NOCHANGE">> $GITHUB_ENV
+          else
+            echo "emojiState=$NEEDINQUIRY">> $GITHUB_ENV
+          fi
 
 
       - name: Before this change ImageA size was ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}
