@@ -38,7 +38,7 @@ jobs:
           mkdir sam4s/; cd sam4s/
           mkdir cli_app/; cd cli_app/
           mkdir build-evt-debug/; cd build-evt-debug/
-          echo "guo123-Added" > ./oscar_controls_app-A.bin
+          echo "guo123-Added12" > ./oscar_controls_app-A.bin
           echo "wong456-Added" > ./oscar_controls_app-B.bin
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
