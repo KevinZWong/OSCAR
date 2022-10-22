@@ -18,6 +18,7 @@ jobs:
     outputs:
       CUR_BUILD_IMAGE_A: ${{ steps.get_cur_imageA.outputs.imageA }}
       CUR_BUILD_IMAGE_B: ${{ steps.get_cur_imageB.outputs.imageB }}
+      CUR_SHA: ${{ steps.get_cur_sha.outputs.sha}}
     steps:
       # - name: work around permission issue, GitHub Actions #760
       #   run: git config --global --add safe.directory /__w/Oscar/Oscar
@@ -42,6 +43,9 @@ jobs:
           echo "wong456-Added" > ./oscar_controls_app-B.bin
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
+
+      - id: get_cur_sha
+        run: echo "sha=${GITHUB_SHA}"
 
       - id: get_cur_imageA
         run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
@@ -68,6 +72,7 @@ jobs:
     outputs:
       PREV_BUILD_IMAGE_A: ${{ steps.get_prev_imageA.outputs.imageA }}
       PREV_BUILD_IMAGE_B: ${{ steps.get_prev_imageB.outputs.imageB }}
+      PREV_SHA: ${{ steps.get_prev_sha.outputs.sha}}
     steps:
       # - name: work around permission issue, GitHub Actions #760
       #   run: git config --global --add safe.directory /__w/Oscar/Oscar
@@ -96,6 +101,8 @@ jobs:
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
 
+      - id: get_prev_sha
+        run: echo "sha=${GITHUB_SHA}"
       - id: get_prev_imageA
         run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
       - id: get_prev_imageB
@@ -184,13 +191,19 @@ jobs:
         with:
           junit_files: ${{ github.workspace }}/**/${{ env.RESULT }}
           check_name: Image Size Checker - Test
-          comment_title: <!DOCTYPE html><html><body>  <h1 style='color:rgb(255, 0, 0);'> 
+          comment_title: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
             Image Size Checker - Test</h1> ${{env.emojiState}} 
-            <h5> Previous Image A Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} 
-            Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} 
+            <h5> image_size_without_this_pr_A = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} 
+            image_size_with_this_pr_A = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} 
             Image A Size Difference =  ${{ env.sDiff_A }} </h5>
-            <h5> Previous Image B Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} 
-            Current Image B Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} 
-            Image A Size Difference = ${{ env.sDiff_B }} </h5> </body></html>
+
+            <h5> image_size_without_this_pr_B = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} 
+            image_size_with_this_pr_B = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} 
+            Image B Size Difference = ${{ env.sDiff_B }} </h5>
+
+            <h6> Above result are comparing current commit  ${{ needs.curBuild.outputs.CUR_SHA }}
+            vs. ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
+
           #comment_title: "guo wong"
           #ignore_runs: true
+          compare_to_earlier_commit: false
