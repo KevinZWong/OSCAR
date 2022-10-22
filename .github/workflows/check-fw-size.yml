@@ -138,10 +138,10 @@ jobs:
           if [ sizeDiff_A -gt 0 -a sizeDiff_B -gt 0 ]
           then
             echo "emojiState=$NOCHANGE">> $GITHUB_ENV
-            echo "RESULT='passed_result.xml'">> $GITHUB_ENV
+            echo "RESULT=passed_result.xml">> $GITHUB_ENV
           else
             echo "emojiState=$NEEDINQUIRY">> $GITHUB_ENV
-            echo "RESULT='inquiry_result.xml'">> $GITHUB_ENV
+            echo "RESULT=inquiry_result.xml">> $GITHUB_ENV
           fi
 
 
