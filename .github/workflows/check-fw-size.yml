@@ -132,7 +132,7 @@ jobs:
           echo "sDiff_prev_A_B=$SizeDiff_prev_A_B" >> $GITHUB_ENV
           SizeDiff_cur_A_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} ))
           echo "sDiff_cur_A_B=$SizeDiff_cur_A_B" >> $GITHUB_ENV
-          PASSED='&#128512'
+          PASSED='<p style="font-size:48px"> &#128512; &#128516; &#128516;</p>'
           echo "emojiState=$PASSED">> $GITHUB_ENV
 
 
@@ -175,7 +175,7 @@ jobs:
         with:
           junit_files: ${{ github.workspace }}/**/results.xml
           check_name: <!DOCTYPE html><html><body>  <h1 style='color:rgb(255, 0, 0);'> 
-            Image Size Checker - Test</h1> <p style="font-size:48px"> &#128512; &#128516; &#10067; &#10067; S{{env.emojiState}}; S{{env.emojiState}};</p>   
+            Image Size Checker - Test</h1> S{{env.emojiState}} 
             <h5> Previous Image A Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} 
             Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} 
             Image A Size Difference =  ${{ env.sDiff_A }} </h5>
