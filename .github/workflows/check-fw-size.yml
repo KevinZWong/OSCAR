@@ -133,13 +133,15 @@ jobs:
           SizeDiff_cur_A_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} ))
           echo "sDiff_cur_A_B=$SizeDiff_cur_A_B" >> $GITHUB_ENV
           
-          NOCHANGE='<p style="font-size:72px"> &#128512; &#128516; &#128516; &#128512; &#128516; &#128516; &#128512; &#128516; </p>'
+          NOCHANGE='<p style="font-size:72px"> &#9989; &#9989; &#9989; &#9989; &#9989; &#9989; &#9989; &#9989; </p>'
           NEEDINQUIRY='<p style="font-size:72px"> &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; </p>'
           if [ sizeDiff_A -gt 0 -a sizeDiff_B -gt 0 ]
           then
             echo "emojiState=$NOCHANGE">> $GITHUB_ENV
+            echo "RESULT='passed_result.xml'">> $GITHUB_ENV
           else
             echo "emojiState=$NEEDINQUIRY">> $GITHUB_ENV
+            echo "RESULT='inquiry_result.xml'">> $GITHUB_ENV
           fi
 
 
@@ -180,8 +182,9 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2.0.0
         if: always()
         with:
-          junit_files: ${{ github.workspace }}/**/results.xml
-          check_name: <!DOCTYPE html><html><body>  <h1 style='color:rgb(255, 0, 0);'> 
+          junit_files: ${{ github.workspace }}/**/${{ env.RESULT }}
+          check_name: Image Size Checker - Test
+          comment_title: <!DOCTYPE html><html><body>  <h1 style='color:rgb(255, 0, 0);'> 
             Image Size Checker - Test</h1> ${{env.emojiState}} 
             <h5> Previous Image A Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} 
             Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} 
