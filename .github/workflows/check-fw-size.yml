@@ -135,7 +135,7 @@ jobs:
           
           NOCHANGE='<p style="font-size:72px"> &#128512; &#128516; &#128516; &#128512; &#128516; &#128516; &#128512; &#128516; </p>'
           NEEDINQUIRY='<p style="font-size:72px"> &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; </p>'
-          if [ 0 ]
+          if [ 1 ]
           then
             echo "emojiState=$NOCHANGE">> $GITHUB_ENV
           else
