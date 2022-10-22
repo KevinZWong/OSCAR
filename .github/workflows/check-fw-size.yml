@@ -193,13 +193,16 @@ jobs:
           check_name: Image Size Checker - Test
           comment_title: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
             Image Size Checker - Test</h1> ${{env.emojiState}} 
-            <h5>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
+            <h4>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
             image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
-            Delta =  ${{ env.sDiff_A }} </h5>
-            <h5> For B image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
+            Delta =  ${{ env.sDiff_A }} </h4>
+            <h4> For B image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
             image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}   
-            Delta = ${{ env.sDiff_B }} </h5>
-            <h6> Above results are comparing current commit ${{ needs.curBuild.outputs.CUR_SHA }} vs ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
+            Delta = ${{ env.sDiff_B }} </h4>
+            <h5> For current commit, delta between ImageA and ImageB is ${{ env.sDiff_cur_A_B }}<h5>
+            <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
+            <h6> Above results are comparing current commit ${{ needs.curBuild.outputs.CUR_SHA }} vs. 
+            Previous commit ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
 
           ignore_runs: true
           compare_to_earlier_commit: false
