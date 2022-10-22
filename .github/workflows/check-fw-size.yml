@@ -199,8 +199,7 @@ jobs:
             <h5> For B image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
             image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}   
             Delta = ${{ env.sDiff_B }} </h5>
-            <h6> Above result are comparing current commit ${{ needs.curBuild.outputs.CUR_SHA }} vs ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
+            <h6> Above results are comparing current commit ${{ needs.curBuild.outputs.CUR_SHA }} vs ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
 
-          #comment_title: "guo wong"
-          #ignore_runs: true
+          ignore_runs: true
           compare_to_earlier_commit: false
