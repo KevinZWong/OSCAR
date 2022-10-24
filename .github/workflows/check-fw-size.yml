@@ -1,0 +1,222 @@
+name: Check Firmware Size
+on:
+  push:
+  #pull_request:
+  workflow_dispatch:
+
+env:
+  BUILD_RUN_NUMBER: ${{ github.run_number }}
+  CONFIG_PATH: "./images/size_checker/"
+  CONFIG_FILE: "size_checker.conf"
+
+jobs:
+  curBuild:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: docker://chewielabs/devenv:version-1.6
+    #   credentials:
+    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #     password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    outputs:
+      CUR_BUILD_IMAGE_A: ${{ steps.get_cur_imageA.outputs.imageA }}
+      CUR_BUILD_IMAGE_B: ${{ steps.get_cur_imageB.outputs.imageB }}
+      CUR_SHA: ${{ steps.get_cur_sha.outputs.sha}}
+    steps:
+      # - name: work around permission issue, GitHub Actions #760
+      #   run: git config --global --add safe.directory /__w/Oscar/Oscar
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        with:
+          # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          # submodules: recursive
+          fetch-depth: 3
+
+      # - name: Build Firmwares
+      #   run: make all  -j16
+
+      - name: testing
+        run: |
+          pwd
+          mkdir sam4s/; cd sam4s/
+          mkdir cli_app/; cd cli_app/
+          mkdir build-evt-debug/; cd build-evt-debug/
+          echo "guo123-Added12" > ./oscar_controls_app-A.bin
+          echo "wong456-Added" > ./oscar_controls_app-B.bin
+          cd ../../..
+          ls -al sam4s/cli_app/build-evt-debug/
+          echo "GITHUB_SHA:  ${GITHUB_SHA}"
+
+      - id: get_cur_sha
+        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - id: get_cur_imageA
+        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+
+      - id: get_cur_imageB
+        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+     
+      - name: get build-evt-debug fw size
+        run: |
+          fsizeA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')
+          echo "$fsizeA"
+          fsizeB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')
+          echo "$fsizeB"
+          sizeDiff=$((fsizeA - fsizeB))
+          echo $sizeDiff
+
+  prevBuild:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: docker://chewielabs/devenv:version-1.6
+    #   credentials:
+    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #     password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    outputs:
+      PREV_BUILD_IMAGE_A: ${{ steps.get_prev_imageA.outputs.imageA }}
+      PREV_BUILD_IMAGE_B: ${{ steps.get_prev_imageB.outputs.imageB }}
+      PREV_SHA: ${{ steps.get_prev_sha.outputs.sha}}
+    steps:
+      # - name: work around permission issue, GitHub Actions #760
+      #   run: git config --global --add safe.directory /__w/Oscar/Oscar
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        with:
+          # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          # submodules: recursive
+          fetch-depth: 3
+
+      - name: Build Firmwares
+        run: |
+          git reset --hard HEAD~1
+          sleep 1
+          # make all  -j16
+
+      - name: testing
+        run: |
+          pwd
+          mkdir sam4s/; cd sam4s/
+          mkdir cli_app/; cd cli_app/
+          mkdir build-evt-debug/; cd build-evt-debug/
+          echo "guo123" > ./oscar_controls_app-A.bin
+          echo "wong456" > ./oscar_controls_app-B.bin
+          cd ../../..
+          ls -al sam4s/cli_app/build-evt-debug/
+          echo "PREVIOUS_SHA:  ${{ github.event.before }}" 
+          echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event.pull_request.base.sha }}
+          echo ${{ github.event.base_ref }}
+          echo ${{ github.event.before }}
+          git log -3
+
+      - id: get_prev_sha
+        run: echo "sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
+
+      - id: get_prev_imageA
+        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+
+      - id: get_prev_imageB
+        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+     
+      - name: get previous build-evt-debug fw size
+        run: |
+          fsizeA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')
+          echo "$fsizeA"
+          fsizeB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')
+          echo "$fsizeB"
+          sizeDiff=$((fsizeA - fsizeB))
+          echo $sizeDiff
+
+
+  reportCombSizeResults:
+    needs: [curBuild, prevBuild]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        with:
+          # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          # submodules: recursive
+          fetch-depth: 3
+
+      - name: Calculation for Differences
+        run: |
+          sizeDiff_A=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} ))
+          echo "sDiff_A=$sizeDiff_A" >> $GITHUB_ENV
+          sizeDiff_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} ))
+          echo "sDiff_B=$sizeDiff_B" >> $GITHUB_ENV
+          SizeDiff_prev_A_B=$(( ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }} - ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} ))
+          echo "sDiff_prev_A_B=$SizeDiff_prev_A_B" >> $GITHUB_ENV
+          SizeDiff_cur_A_B=$(( ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} - ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }} ))
+          echo "sDiff_cur_A_B=$SizeDiff_cur_A_B" >> $GITHUB_ENV
+          
+          NOCHANGE='<p style="font-size:72px"> &#9989; &#9989; &#9989; &#9989; &#9989; &#9989; &#9989; &#9989; </p>'
+          NEEDINQUIRY='<p style="font-size:72px"> &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; </p>'
+
+          source ${{ env.CONFIG_PATH }}${{ env.CONFIG_FILE }}
+
+          if [ $((sizeDiff_A)) -gt $((SIZE_THRESHOLD_A)) -a $((sizeDiff_B)) -gt $((SIZE_THRESHOLD_B)) ]
+          then
+            echo "emojiState=$NOCHANGE">> $GITHUB_ENV
+            echo "RESULT=${{ env.CONFIG_PATH }}passed_result.xml">> $GITHUB_ENV
+          else
+            echo "emojiState=$NEEDINQUIRY">> $GITHUB_ENV
+            echo "RESULT=${{ env.CONFIG_PATH }}inquiry_result.xml">> $GITHUB_ENV
+          fi
+
+
+      - name: Before this change ImageA size was ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}
+        run: echo "Previous Image A Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}"
+
+      - name: After this change ImageA size is ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}
+        run: echo "Current Image A Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }} "
+
+      - name: The imageA Size Difference of this change is ${{ env.sDiff_A }}
+        run: echo "Image A Size Difference = ${{ env.sDiff_A }}"
+
+      - name: Before this change ImageB size was ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}
+        run: echo "Previous Image B Size = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }} "
+
+      - name: After this change ImageB size is ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}
+        run: echo "Current Image B Size = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}"
+
+      - name: The imageB Size Difference of this change is ${{ env.sDiff_B }}
+        run: echo "Image B Size Difference = ${{ env.sDiff_B }}"   
+
+      - name: Before this change ImageA and ImageB Size Difference was ${{ env.sDiff_prev_A_B }}
+        run: echo "Before Image A and Image B Size Difference = ${{ env.sDiff_prev_A_B }}" 
+
+      - name: Currently this change ImageA and ImageB Size Difference is ${{ env.sDiff_cur_A_B }}
+        run: echo "Currently Image A and Image B Size Difference = ${{ env.sDiff_cur_A_B }}" 
+
+      - name: Testing
+        run: |
+          ls -al
+          pwd
+          echo "github.workspace =>   ${{ github.workspace }}"
+          #ls -la ${{ github.workspace }}/**/*.xml
+          #ls -la ${{ github.workspace }}/*.xml
+
+
+      - name: Publish unit tests results
+        uses: EnricoMi/publish-unit-test-result-action@v2.0.0
+        if: always()
+        with:
+          junit_files: ${{ github.workspace }}/**/${{ env.RESULT }}
+          check_name: Image Size Checker - Test
+          comment_title: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
+            Image Size Checker - Test</h1> ${{env.emojiState}} 
+            <h4>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
+            image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
+            Delta =  ${{ env.sDiff_A }} </h4>
+            <h4> For B image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
+            image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}   
+            Delta = ${{ env.sDiff_B }} </h4>
+            <h5> For current commit, delta between ImageA and ImageB is ${{ env.sDiff_cur_A_B }}<h5>
+            <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
+            <h6> Above results are comparing current commit ${{ needs.curBuild.outputs.CUR_SHA }} vs. 
+            Previous commit ${{ needs.prevBuild.outputs.PREV_SHA }}</h6></body></html>
+
+          ignore_runs: true
+          compare_to_earlier_commit: false

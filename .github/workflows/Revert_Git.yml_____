@@ -1,0 +1,54 @@
+name: Revert Git Test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: checking
+        run: |
+          echo "Test PR#2"
+          pwd
+          ls -l
+          git status
+          git log
+          env
+
+      - name: checking - 2
+        run: |
+          git status
+          echo "test git log"
+          git log
+          git reflog
+          echo "end got reflog"
+          echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event.pull_request.base.sha }}
+          echo ${{ github.event.base_ref }}
+          echo ${{ github.event.before }}
+          echo "GITHUB_SHA:  ${GITHUB_SHA}"  
+          cat ./test1
+          a_filesize=$(wc -c oscar_controls_app/oscar_controls_app-A.bin | awk '{print $1}')
+
+      - name: Revert Head back
+        run: |
+          git reset --hard HEAD~1
+          #git reset --hard ${{ github.event.before }}
+          git status
+          git log
+          cat ./test1
+
+      - name: Back to Original
+        run: |
+          git reset --hard "$GITHUB_SHA"
+          git status
+          git log
+          cat ./test1
