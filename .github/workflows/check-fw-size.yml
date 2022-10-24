@@ -46,6 +46,11 @@ jobs:
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
           echo "GITHUB_SHA:  ${GITHUB_SHA}"
+          echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event.pull_request.base.sha }}
+          echo ${{ github.event.base_ref }}
+          echo ${{ github.event.before }}
+          git log -3
 
       - id: get_cur_sha
         run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
