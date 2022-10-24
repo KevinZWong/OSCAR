@@ -51,6 +51,8 @@ jobs:
           echo ${{ github.event.base_ref }}
           echo ${{ github.event.before }}
           git log -3
+          git status
+          git branch
 
       - id: get_cur_sha
         run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
@@ -114,6 +116,8 @@ jobs:
           echo ${{ github.event.base_ref }}
           echo ${{ github.event.before }}
           git log -3
+          git status
+          git branch
 
       - id: get_prev_sha
         run: echo "sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
@@ -160,8 +164,9 @@ jobs:
           NEEDINQUIRY='<p style="font-size:72px"> &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; </p>'
 
           source ${{ env.CONFIG_PATH }}${{ env.CONFIG_FILE }}
-
-          if [ $((sizeDiff_A)) -gt $((SIZE_THRESHOLD_A)) -a $((sizeDiff_B)) -gt $((SIZE_THRESHOLD_B)) ]
+          echo $SIZE_THRESHOLD_A
+          echo $SIZE_THRESHOLD_B
+          if [ $((sizeDiff_A)) -lt $((SIZE_THRESHOLD_A)) -a $((sizeDiff_B)) -lt $((SIZE_THRESHOLD_B)) ]
           then
             echo "emojiState=$NOCHANGE">> $GITHUB_ENV
             echo "RESULT=${{ env.CONFIG_PATH }}passed_result.xml">> $GITHUB_ENV
@@ -202,6 +207,10 @@ jobs:
           echo "github.workspace =>   ${{ github.workspace }}"
           #ls -la ${{ github.workspace }}/**/*.xml
           #ls -la ${{ github.workspace }}/*.xml
+          git status
+          git log -3
+          git branch
+          env 
 
 
       - name: Publish unit tests results
