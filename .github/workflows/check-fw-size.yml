@@ -6,6 +6,8 @@ on:
 
 env:
   BUILD_RUN_NUMBER: ${{ github.run_number }}
+  CONFIG_PATH: "./images/size_checker/"
+  CONFIG_FILE: "size_checker.conf"
 
 jobs:
   curBuild:
@@ -151,13 +153,16 @@ jobs:
           
           NOCHANGE='<p style="font-size:72px"> &#9989; &#9989; &#9989; &#9989; &#9989; &#9989; &#9989; &#9989; </p>'
           NEEDINQUIRY='<p style="font-size:72px"> &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; </p>'
-          if [ sizeDiff_A -gt 0 -a sizeDiff_B -gt 0 ]
+
+          source ${{ env.CONFIG_PATH }}${{ env.CONFIG_FILE }}
+
+          if [ $((sizeDiff_A)) -gt $((SIZE_THRESHOLD_A)) -a $((sizeDiff_B)) -gt $((SIZE_THRESHOLD_B)) ]
           then
             echo "emojiState=$NOCHANGE">> $GITHUB_ENV
-            echo "RESULT=passed_result.xml">> $GITHUB_ENV
+            echo "RESULT=${{ env.CONFIG_PATH }}passed_result.xml">> $GITHUB_ENV
           else
             echo "emojiState=$NEEDINQUIRY">> $GITHUB_ENV
-            echo "RESULT=inquiry_result.xml">> $GITHUB_ENV
+            echo "RESULT=${{ env.CONFIG_PATH }}inquiry_result.xml">> $GITHUB_ENV
           fi
 
 
@@ -190,8 +195,8 @@ jobs:
           ls -al
           pwd
           echo "github.workspace =>   ${{ github.workspace }}"
-          #ls -la ${{ github.workspace }}/**/*.xml
-          ls -la ${{ github.workspace }}/*.xml
+          ls -la ${{ github.workspace }}/**/*.xml
+          #ls -la ${{ github.workspace }}/*.xml
 
 
       - name: Publish unit tests results
@@ -211,7 +216,7 @@ jobs:
             <h5> For current commit, delta between ImageA and ImageB is ${{ env.sDiff_cur_A_B }}<h5>
             <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
             <h6> Above results are comparing current commit ${{ needs.curBuild.outputs.CUR_SHA }} vs. 
-            Previous commit ${{ needs.prevBuild.outputs.PREV_SHA }}</h6>  </body></html>
+            Previous commit ${{ needs.prevBuild.outputs.PREV_SHA }}</h6></body></html>
 
           ignore_runs: true
           compare_to_earlier_commit: false
