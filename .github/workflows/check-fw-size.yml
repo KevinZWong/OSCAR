@@ -217,5 +217,5 @@ jobs:
             <h6> Above results are comparing current commit ${{ needs.curBuild.outputs.CUR_SHA }} vs. 
             Previous commit ${{ needs.prevBuild.outputs.PREV_SHA }}</h6></body></html>
 
-          ignore_runs: true
-          compare_to_earlier_commit: false
+          #ignore_runs: true
+          compare_to_earlier_commit: true
