@@ -52,6 +52,7 @@ jobs:
           echo ${{ github.event.before }}
           git log -3
           git status
+          git branch
 
       - id: get_cur_sha
         run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
@@ -116,6 +117,7 @@ jobs:
           echo ${{ github.event.before }}
           git log -3
           git status
+          git branch
 
       - id: get_prev_sha
         run: echo "sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
@@ -207,6 +209,7 @@ jobs:
           #ls -la ${{ github.workspace }}/*.xml
           git status
           git log -3
+          git branch
           env 
 
 
