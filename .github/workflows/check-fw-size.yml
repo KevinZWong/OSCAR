@@ -51,6 +51,7 @@ jobs:
           echo ${{ github.event.base_ref }}
           echo ${{ github.event.before }}
           git log -3
+          git status
 
       - id: get_cur_sha
         run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
@@ -114,6 +115,7 @@ jobs:
           echo ${{ github.event.base_ref }}
           echo ${{ github.event.before }}
           git log -3
+          git status
 
       - id: get_prev_sha
         run: echo "sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
@@ -202,6 +204,9 @@ jobs:
           echo "github.workspace =>   ${{ github.workspace }}"
           #ls -la ${{ github.workspace }}/**/*.xml
           #ls -la ${{ github.workspace }}/*.xml
+          git status
+          git log -3
+          env | grep SIZE_THRESHOLD
 
 
       - name: Publish unit tests results
