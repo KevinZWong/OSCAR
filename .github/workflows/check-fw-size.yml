@@ -207,7 +207,7 @@ jobs:
           #ls -la ${{ github.workspace }}/*.xml
           git status
           git log -3
-          env | grep SIZE_THRESHOLD
+          env 
 
 
       - name: Publish unit tests results
