@@ -161,7 +161,7 @@ jobs:
 
           source ${{ env.CONFIG_PATH }}${{ env.CONFIG_FILE }}
 
-          if [ $((sizeDiff_A)) -gt $((SIZE_THRESHOLD_A)) -a $((sizeDiff_B)) -gt $((SIZE_THRESHOLD_B)) ]
+          if [ $((sizeDiff_A)) -lt $((SIZE_THRESHOLD_A)) -a $((sizeDiff_B)) -lt $((SIZE_THRESHOLD_B)) ]
           then
             echo "emojiState=$NOCHANGE">> $GITHUB_ENV
             echo "RESULT=${{ env.CONFIG_PATH }}passed_result.xml">> $GITHUB_ENV
