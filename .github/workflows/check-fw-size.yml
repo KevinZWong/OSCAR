@@ -118,7 +118,7 @@ jobs:
           then
             PREVIOUS_SHA=${{ github.event.before }}
           else
-            PREVIOUS_SHA=${ git log -1 | head -n 1 | awk '{print $2}' }
+            PREVIOUS_SHA=$( git log -1 | head -n 1 | awk '{print $2}' )
           fi
 
           echo "PREVIOUS_SHA:  ${PREVIOUS_SHA}"
