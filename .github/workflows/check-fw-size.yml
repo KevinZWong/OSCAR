@@ -225,7 +225,6 @@ jobs:
           git branch
           env 
 
-
       - name: Publish unit tests results
         uses: EnricoMi/publish-unit-test-result-action@v2.0.0
         if: always()
@@ -243,6 +242,5 @@ jobs:
             <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
             <h6> Above results are comparing current commit ${{ needs.curBuild.outputs.CUR_SHA }} vs. 
             Previous commit ${{ needs.prevBuild.outputs.PREV_SHA }}</h6></body></html>
-
-          #ignore_runs: true
-          compare_to_earlier_commit: true
+          ignore_runs: true
+          compare_to_earlier_commit: false
