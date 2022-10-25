@@ -177,8 +177,9 @@ jobs:
           NEEDINQUIRY='<p style="font-size:72px"> &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; &#10067; </p>'
 
           source ${{ env.CONFIG_PATH }}${{ env.CONFIG_FILE }}
-          echo $SIZE_THRESHOLD_A
-          echo $SIZE_THRESHOLD_B
+          echo $( printenv | grep SIZE_THRESHOLD)
+          #echo $SIZE_THRESHOLD_A
+          #echo $SIZE_THRESHOLD_B
           if [ $((sizeDiff_A)) -lt $((SIZE_THRESHOLD_A)) -a $((sizeDiff_B)) -lt $((SIZE_THRESHOLD_B)) ]
           then
             echo "emojiState=$NOCHANGE">> $GITHUB_ENV
@@ -223,7 +224,7 @@ jobs:
           git status
           git log -3
           git branch
-          env 
+          printenv 
 
       - name: Publish unit tests results
         uses: EnricoMi/publish-unit-test-result-action@v2.0.0
