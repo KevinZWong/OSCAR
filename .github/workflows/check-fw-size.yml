@@ -110,7 +110,14 @@ jobs:
           echo "wong456" > ./oscar_controls_app-B.bin
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
-          echo "PREVIOUS_SHA:  ${{ github.event.before }}" 
+
+          if [ $GITHUB_EVENT_NAME == pull_request ]
+          then
+            echo "PREVIOUS_SHA:  ${{ github.event.pull_request.base.sha }}"
+          else
+            echo "PREVIOUS_SHA:  ${{ github.event.before }}"
+          fi
+
           echo ${{ github.event.pull_request.base.ref }}
           echo ${{ github.event.pull_request.base.sha }}
           echo ${{ github.event.base_ref }}
@@ -120,7 +127,13 @@ jobs:
           git branch
 
       - id: get_prev_sha
-        run: echo "sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
+        run: |
+          if [ $GITHUB_EVENT_NAME == pull_request ]
+          then
+            echo "sha=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
+          else
+            echo "sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
+          fi
 
       - id: get_prev_imageA
         run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
