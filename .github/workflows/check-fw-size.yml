@@ -113,11 +113,17 @@ jobs:
 
           if [ $GITHUB_EVENT_NAME == pull_request ]
           then
-            echo "PREVIOUS_SHA:  ${{ github.event.pull_request.base.sha }}"
+            PREVIOUS_SHA=${{ github.event.pull_request.base.sha }}
+          elif [ $GITHUB_EVENT_NAME == push ]
+          then
+            PREVIOUS_SHA=${{ github.event.before }}
           else
-            echo "PREVIOUS_SHA:  ${{ github.event.before }}"
+            PREVIOUS_SHA=${ git log -1 | head -n 1 | awk '{print $2}' }
           fi
 
+          echo "PREVIOUS_SHA:  ${PREVIOUS_SHA}"
+          echo "PREV_SHA=$PREVIOUS_SHA">> $GITHUB_ENV
+      
           echo ${{ github.event.pull_request.base.ref }}
           echo ${{ github.event.pull_request.base.sha }}
           echo ${{ github.event.base_ref }}
@@ -127,14 +133,8 @@ jobs:
           git branch
 
       - id: get_prev_sha
-        run: |
-          if [ $GITHUB_EVENT_NAME == pull_request ]
-          then
-            echo "sha=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
-          else
-            echo "sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
-          fi
-
+        run: echo "sha=${{ env.PREV_SHA }}" >> $GITHUB_OUTPUT
+        
       - id: get_prev_imageA
         run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
 
