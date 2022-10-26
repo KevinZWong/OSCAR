@@ -4,6 +4,7 @@ on:
   #guo pull_request:
   #guo  types: [ opened, synchronize, reopened, ready_for_review ]
   #guo  branches: [ main ]
+  push:
 
 jobs:
   gitlint:
@@ -36,7 +37,7 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r ./scripts/gitlint/requirements.txt
-        
+
       - name: Run gitlint to check commit message format
         run: gitlint -C ./scripts/gitlint/.gitlint --commits ${{ env.GITLINT_HEAD_COMMIT }}...${{ env.GITLINT_HEAD_COMMIT }}~${{ env.GITLINT_COMMITS_NUM }}
 
