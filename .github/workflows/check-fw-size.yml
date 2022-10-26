@@ -236,7 +236,7 @@ jobs:
             Delta = ${{ env.sDiff_B }} </h4>
             <h5> For current commit, delta between ImageA and ImageB is ${{ env.sDiff_cur_A_B }}<h5>
             <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
-            <h6> Above results are comparing current commit <p><a href="https://github.com/chewielabs/Oscar/commit/"${{ needs.curBuild.outputs.CUR_SHA }}>${{ needs.curBuild.outputs.CUR_SHA }}</a> vs. 
-            Previous commit <p><a href="https://github.com/chewielabs/Oscar/commit/"${{ needs.curBuild.outputs.PREV_SHA }}>${{ needs.curBuild.outputs.PREV_SHA }}</a>${{ needs.prevBuild.outputs.PREV_SHA }}</h6></body></html>
+            <h6> Above results are comparing current commit <p><a href="https://github.com/chewielabs/Oscar/commit/${{ needs.curBuild.outputs.CUR_SHA }}">${{ needs.curBuild.outputs.CUR_SHA }}</a> vs. 
+            Previous commit <p><a href="https://github.com/chewielabs/Oscar/commit/${{ needs.curBuild.outputs.PREV_SHA }}">${{ needs.curBuild.outputs.PREV_SHA }}</a>${{ needs.prevBuild.outputs.PREV_SHA }}</h6></body></html>
           ignore_runs: true
           compare_to_earlier_commit: false
