@@ -19,7 +19,7 @@ jobs:
 
              echo "GITLINT_HEAD_COMMIT=  ${{ github.event.pull_request.head.sha }}"
              echo "GITLINT_COMMITS_NUM=  ${{ github.event.pull_request.commits }}"
-             echo "GITLINT_REPO_DEPTH=   ${{ github.event.pull_request.commits }}"
+             echo "GITLINT_REPO_DEPTH=   $((${{ github.event.pull_request.commits }} + 1))"
              printenv
 
       - name: 'Checkout all commits within above range'
@@ -41,5 +41,8 @@ jobs:
         run: pip install -r ./scripts/gitlint/requirements.txt
 
       - name: Run gitlint to check commit message format
-        run: gitlint -C ./scripts/gitlint/.gitlint --commits ${{ env.GITLINT_HEAD_COMMIT }}...${{ env.GITLINT_HEAD_COMMIT }}~${{ env.GITLINT_COMMITS_NUM }}
+        run: |
+          echo "GITLINT_HEAD_COMMIT=  ${{ env.GITLINT_HEAD_COMMIT }}"
+          echo "GITLINT_COMMITS_NUM=  ${{ env.GITLINT_COMMITS_NUM }}"
+          gitlint -C ./scripts/gitlint/.gitlint --commits ${{ env.GITLINT_HEAD_COMMIT }}...${{ env.GITLINT_HEAD_COMMIT }}~${{ env.GITLINT_COMMITS_NUM }}
 
