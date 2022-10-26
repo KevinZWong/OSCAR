@@ -215,11 +215,7 @@ jobs:
 
       - name: Testing
         run: |
-          ls -al
-          pwd
           echo "github.workspace =>   ${{ github.workspace }}"
-          #ls -la ${{ github.workspace }}/**/*.xml
-          #ls -la ${{ github.workspace }}/*.xml
           git status
           git log -3
           git branch

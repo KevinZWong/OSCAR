@@ -1,0 +1,42 @@
+name: 'gitlint: Commit Message Checking'
+
+on:
+  #guo pull_request:
+  #guo  types: [ opened, synchronize, reopened, ready_for_review ]
+  #guo  branches: [ main ]
+
+jobs:
+  gitlint:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Determine range of commits that going to be checked'
+        run: echo "GITLINT_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+             echo "GITLINT_COMMITS_NUM=${{ github.event.pull_request.commits }}" >> $GITHUB_ENV &&
+             echo "GITLINT_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+
+             echo "GITLINT_HEAD_COMMIT=  ${{ github.event.pull_request.head.sha }}"
+             echo "GITLINT_COMMITS_NUM=  ${{ github.event.pull_request.commits }}"
+             echo "GITLINT_REPO_DEPTH=   $((${{ github.event.pull_request.commits }}"
+
+      - name: 'Checkout all commits within above range'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.GITLINT_HEAD_COMMIT }}
+          fetch-depth: ${{ env.GITLINT_REPO_DEPTH }}
+
+      - name: 'Verify the git tree being cloned'
+        run: git log --oneline
+
+      - name: 'Configure Python Environment'
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r ./scripts/gitlint/requirements.txt
+        
+      - name: Run gitlint to check commit message format
+        run: gitlint -C ./scripts/gitlint/.gitlint --commits ${{ env.GITLINT_HEAD_COMMIT }}...${{ env.GITLINT_HEAD_COMMIT }}~${{ env.GITLINT_COMMITS_NUM }}
+
