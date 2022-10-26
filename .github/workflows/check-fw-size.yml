@@ -8,6 +8,7 @@ env:
   BUILD_RUN_NUMBER: ${{ github.run_number }}
   CONFIG_PATH: "./images/size_checker/"
   CONFIG_FILE: "size_checker.conf"
+  COMMIT_LINK: "https://github.com/KevinZWong/OSCAR/commit/"
 
 jobs:
   curBuild:
@@ -236,8 +237,9 @@ jobs:
             Delta = ${{ env.sDiff_B }} </h4>
             <h5> For current commit, delta between ImageA and ImageB is ${{ env.sDiff_cur_A_B }}<h5>
             <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
-            <h6> Above results are comparing current commit 
-            <p><a href="https://github.com/KevinZWong/Oscar/commit/${{needs.curBuild.outputs.CUR_SHA}}">${{ needs.curBuild.outputs.CUR_SHA }}</a></p>
-            vs. Previous commit <p><a href="https://github.com/KevinZWong/Oscar/commit/${{needs.prevBuild.outputs.PREV_SHA}}">${{ needs.prevBuild.outputs.PREV_SHA }}</a></p></h6></body></html>
+            <h6> Above results are comparing current commit <p><a href="${{env.COMMIT_LINK}}${{needs.curBuild.outputs.CUR_SHA}}">
+            ${{ needs.curBuild.outputs.CUR_SHA }}</a></p> vs. Previous commit 
+            <p><a href="${{env.COMMIT_LINK}}${{needs.prevBuild.outputs.PREV_SHA}}">
+            ${{ needs.prevBuild.outputs.PREV_SHA }}</a></p></h6></body></html>
           ignore_runs: true
           compare_to_earlier_commit: false
