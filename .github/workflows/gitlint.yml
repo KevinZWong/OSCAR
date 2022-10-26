@@ -1,10 +1,10 @@
 name: 'gitlint: Commit Message Checking'
 
 on:
-  #guo pull_request:
-  #guo  types: [ opened, synchronize, reopened, ready_for_review ]
-  #guo  branches: [ main ]
-  push:
+  pull_request:
+  types: [ opened, synchronize, reopened, ready_for_review ]
+  branches: [ main ]
+
 
 jobs:
   gitlint:
