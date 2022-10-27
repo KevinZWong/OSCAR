@@ -222,12 +222,35 @@ jobs:
           git branch
           printenv 
 
-      - name: Publish unit tests results
-        uses: EnricoMi/publish-unit-test-result-action@v2.0.0
-        if: always()
+      
+      #- name: Publish unit tests results
+      #  uses: EnricoMi/publish-unit-test-result-action@v2.0.0
+      #  if: always()
+      #  with:
+      #    junit_files: ${{ github.workspace }}/**/${{ env.RESULT }}
+      #    comment_title: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
+      #      Image Size Checker - Test</h1> ${{env.emojiState}} 
+      #      <h4>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
+      #      image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
+      #      Delta =  ${{ env.sDiff_A }} </h4>
+      #      <h4> For B image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
+      #      image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}   
+      #      Delta = ${{ env.sDiff_B }} </h4>
+      #      <h5> For current commit, delta between ImageA and ImageB is ${{ env.sDiff_cur_A_B }}<h5>
+      #      <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
+      #      <h6> Above results are comparing current commit <p><a href="${{env.COMMIT_LINK}}${{needs.curBuild.outputs.CUR_SHA}}">
+      #      ${{ needs.curBuild.outputs.CUR_SHA }}</a></p> vs. Previous commit 
+      #      <p><a href="${{env.COMMIT_LINK}}${{needs.prevBuild.outputs.PREV_SHA}}">
+      #      ${{ needs.prevBuild.outputs.PREV_SHA }}</a></p></h6></body></html>
+      #    ignore_runs: true
+      #    compare_to_earlier_commit: false
+      #  */
+
+      - name: Test with add-pr-comment
+        uses: mshick/add-pr-comment@v1
         with:
-          junit_files: ${{ github.workspace }}/**/${{ env.RESULT }}
-          comment_title: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
+          message: |
+            <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
             Image Size Checker - Test</h1> ${{env.emojiState}} 
             <h4>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
             image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
@@ -241,16 +264,6 @@ jobs:
             ${{ needs.curBuild.outputs.CUR_SHA }}</a></p> vs. Previous commit 
             <p><a href="${{env.COMMIT_LINK}}${{needs.prevBuild.outputs.PREV_SHA}}">
             ${{ needs.prevBuild.outputs.PREV_SHA }}</a></p></h6></body></html>
-          ignore_runs: true
-          compare_to_earlier_commit: false
-
-      - name: Test with add-pr-comment
-        uses: mshick/add-pr-comment@v1
-        with:
-          message: |
-            **Hello**
-            🌏
-            !
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
           allow-repeats: false # This is the default
