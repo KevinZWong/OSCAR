@@ -137,7 +137,7 @@ jobs:
         run: | 
              echo "GITLINT_HEAD_COMMIT=   ${{ github.event.pull_request.head.sha }}"
              echo "GITLINT_COMMITS_NUM=   ${{ github.event.pull_request.commits }}"
-             echo "GITLINT_REPO_DEPTH=    $((${{ github.event.pull_request.commits }}"
+             echo "GITLINT_REPO_DEPTH=    $((${{ github.event.pull_request.commits }} + 1))"
              
              echo "GITLINT_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
              echo "GITLINT_COMMITS_NUM=${{ github.event.pull_request.commits }}" >> $GITHUB_ENV &&
