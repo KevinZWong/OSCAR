@@ -1,6 +1,6 @@
 name: Check Firmware Size
 on:
-  push:
+  #push:
   pull_request:
   workflow_dispatch:
 
@@ -45,6 +45,7 @@ jobs:
           echo "guo123-Added12" > ./oscar_controls_app-A.bin
           echo "wong456-Added" > ./oscar_controls_app-B.bin
           cd ../../..
+
           ls -al sam4s/cli_app/build-evt-debug/
           echo "GITHUB_SHA:  ${GITHUB_SHA}"
           echo ${{ github.event.pull_request.base.ref }}
@@ -88,16 +89,24 @@ jobs:
       # - name: work around permission issue, GitHub Actions #760
       #   run: git config --global --add safe.directory /__w/Oscar/Oscar
 
+      - name: 'Determine range of commits that going to be checked'
+        run: echo "GITLINT_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+             echo "GITLINT_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
+             echo "GITLINT_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 2))" >> $GITHUB_ENV
+
+
       - name: Checkout the code
         uses: actions/checkout@v3
         with:
           # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
           # submodules: recursive
-          fetch-depth: 3
+
+          ref: ${{ env.GITLINT_HEAD_COMMIT }}
+          fetch-depth: ${{ env.GITLINT_REPO_DEPTH }}
 
       - name: Build Firmwares
         run: |
-          git reset --hard HEAD~1
+          git reset --hard HEAD~${{ env.GITLINT_COMMITS_NUM }}
           sleep 1
           # make all  -j16
 
@@ -112,26 +121,39 @@ jobs:
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
 
+
           if [ $GITHUB_EVENT_NAME == pull_request ]
           then
             PREVIOUS_SHA=${{ github.event.pull_request.base.sha }}
           elif [ $GITHUB_EVENT_NAME == push ]
           then
-            PREVIOUS_SHA=${{ github.event.before }}
+            #PREVIOUS_SHA=${{ github.event.before }}
+            PREVIOUS_SHA=$( git log -1 --format='%H' )
           else
             PREVIOUS_SHA=$( git log -1 | head -n 1 | awk '{print $2}' )
           fi
-
           echo "PREVIOUS_SHA:  ${PREVIOUS_SHA}"
           echo "PREV_SHA=$PREVIOUS_SHA">> $GITHUB_ENV
-      
           echo ${{ github.event.pull_request.base.ref }}
           echo ${{ github.event.pull_request.base.sha }}
           echo ${{ github.event.base_ref }}
           echo ${{ github.event.before }}
-          git log -3
+          git log -8
           git status
           git branch
+
+
+      - name: testing_2
+        run: | 
+             echo "GITLINT_HEAD_COMMIT=   ${{ github.event.pull_request.head.sha }}"
+             echo "GITLINT_COMMITS_NUM=   ${{ github.event.pull_request.commits }}"
+             echo "GITLINT_REPO_DEPTH=    $((${{ github.event.pull_request.commits }} + 1))"
+             
+             echo "GITLINT_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+             echo "GITLINT_COMMITS_NUM=${{ github.event.pull_request.commits }}" >> $GITHUB_ENV &&
+             echo "GITLINT_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+
+
 
       - id: get_prev_sha
         run: echo "sha=${{ env.PREV_SHA }}" >> $GITHUB_OUTPUT
@@ -222,12 +244,35 @@ jobs:
           git branch
           printenv 
 
-      - name: Publish unit tests results
-        uses: EnricoMi/publish-unit-test-result-action@v2.0.0
-        if: always()
+      
+      #- name: Publish unit tests results
+      #  uses: EnricoMi/publish-unit-test-result-action@v2.0.0
+      #  if: always()
+      #  with:
+      #    junit_files: ${{ github.workspace }}/**/${{ env.RESULT }}
+      #    comment_title: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
+      #      Image Size Checker - Test</h1> ${{env.emojiState}} 
+      #      <h4>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
+      #      image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
+      #      Delta =  ${{ env.sDiff_A }} </h4>
+      #      <h4> For B image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
+      #      image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}   
+      #      Delta = ${{ env.sDiff_B }} </h4>
+      #      <h5> For current commit, delta between ImageA and ImageB is ${{ env.sDiff_cur_A_B }}<h5>
+      #      <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
+      #      <h6> Above results are comparing current commit <p><a href="${{env.COMMIT_LINK}}${{needs.curBuild.outputs.CUR_SHA}}">
+      #      ${{ needs.curBuild.outputs.CUR_SHA }}</a></p> vs. Previous commit 
+      #      <p><a href="${{env.COMMIT_LINK}}${{needs.prevBuild.outputs.PREV_SHA}}">
+      #      ${{ needs.prevBuild.outputs.PREV_SHA }}</a></p></h6></body></html>
+      #    ignore_runs: true
+      #    compare_to_earlier_commit: false
+      #  */
+
+      - name: Test with add-pr-comment
+        uses: mshick/add-pr-comment@v1
         with:
-          junit_files: ${{ github.workspace }}/**/${{ env.RESULT }}
-          comment_title: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
+          message: |
+            <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
             Image Size Checker - Test</h1> ${{env.emojiState}} 
             <h4>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
             image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
@@ -241,16 +286,6 @@ jobs:
             ${{ needs.curBuild.outputs.CUR_SHA }}</a></p> vs. Previous commit 
             <p><a href="${{env.COMMIT_LINK}}${{needs.prevBuild.outputs.PREV_SHA}}">
             ${{ needs.prevBuild.outputs.PREV_SHA }}</a></p></h6></body></html>
-          ignore_runs: true
-          compare_to_earlier_commit: false
-
-      - name: Test with add-pr-comment
-        uses: mshick/add-pr-comment@v1
-        with:
-          message: |
-            **Hello**
-            🌏
-            !
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
           allow-repeats: false # This is the default
