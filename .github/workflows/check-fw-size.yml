@@ -89,12 +89,20 @@ jobs:
       # - name: work around permission issue, GitHub Actions #760
       #   run: git config --global --add safe.directory /__w/Oscar/Oscar
 
+      - name: 'Determine range of commits that going to be checked'
+        run: echo "GITLINT_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+             echo "GITLINT_COMMITS_NUM=${{ github.event.pull_request.commits }}" >> $GITHUB_ENV &&
+             echo "GITLINT_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+
+
       - name: Checkout the code
         uses: actions/checkout@v3
         with:
           # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
           # submodules: recursive
-          fetch-depth: 8
+
+          ref: ${{ env.GITLINT_HEAD_COMMIT }}
+          fetch-depth: ${{ env.GITLINT_REPO_DEPTH }}
 
       - name: Build Firmwares
         run: |
