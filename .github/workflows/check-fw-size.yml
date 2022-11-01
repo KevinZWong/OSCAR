@@ -91,8 +91,8 @@ jobs:
 
       - name: 'Determine range of commits that going to be checked'
         run: echo "GITLINT_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
-             echo "GITLINT_COMMITS_NUM=${{ github.event.pull_request.commits }}" >> $GITHUB_ENV &&
-             echo "GITLINT_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+             echo "GITLINT_COMMITS_NUM=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV &&
+             echo "GITLINT_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 2))" >> $GITHUB_ENV
 
 
       - name: Checkout the code
@@ -106,7 +106,7 @@ jobs:
 
       - name: Build Firmwares
         run: |
-          git reset --hard HEAD~1
+          git reset --hard HEAD~${{ env.GITLINT_COMMITS_NUM }}
           sleep 1
           # make all  -j16
 
