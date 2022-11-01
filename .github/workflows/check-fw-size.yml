@@ -45,6 +45,7 @@ jobs:
           echo "guo123-Added12" > ./oscar_controls_app-A.bin
           echo "wong456-Added" > ./oscar_controls_app-B.bin
           cd ../../..
+
           ls -al sam4s/cli_app/build-evt-debug/
           echo "GITHUB_SHA:  ${GITHUB_SHA}"
           echo ${{ github.event.pull_request.base.ref }}
@@ -112,19 +113,19 @@ jobs:
           cd ../../..
           ls -al sam4s/cli_app/build-evt-debug/
 
+
           if [ $GITHUB_EVENT_NAME == pull_request ]
           then
             PREVIOUS_SHA=${{ github.event.pull_request.base.sha }}
           elif [ $GITHUB_EVENT_NAME == push ]
           then
-            PREVIOUS_SHA=${{ github.event.before }}
+            #PREVIOUS_SHA=${{ github.event.before }}
+            PREVIOUS_SHA=$( git log -1 --format='%H' )
           else
             PREVIOUS_SHA=$( git log -1 | head -n 1 | awk '{print $2}' )
           fi
-
           echo "PREVIOUS_SHA:  ${PREVIOUS_SHA}"
           echo "PREV_SHA=$PREVIOUS_SHA">> $GITHUB_ENV
-      
           echo ${{ github.event.pull_request.base.ref }}
           echo ${{ github.event.pull_request.base.sha }}
           echo ${{ github.event.base_ref }}
@@ -132,6 +133,7 @@ jobs:
           git log -3
           git status
           git branch
+
 
       - name: testing_2
         run: | 
