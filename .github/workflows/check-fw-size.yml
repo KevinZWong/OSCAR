@@ -90,9 +90,9 @@ jobs:
       #   run: git config --global --add safe.directory /__w/Oscar/Oscar
 
       - name: 'Determine range of commits that going to be checked'
-        run: echo "GITLINT_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
-             echo "GITLINT_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
-             echo "GITLINT_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 2))" >> $GITHUB_ENV
+        run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+             echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
+             echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 2))" >> $GITHUB_ENV
 
 
       - name: Checkout the code
@@ -101,12 +101,12 @@ jobs:
           # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
           # submodules: recursive
 
-          ref: ${{ env.GITLINT_HEAD_COMMIT }}
-          fetch-depth: ${{ env.GITLINT_REPO_DEPTH }}
+          ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
+          fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
 
       - name: Build Firmwares
         run: |
-          git reset --hard HEAD~${{ env.GITLINT_COMMITS_NUM }}
+          git reset --hard HEAD~${{ env.SIZECHECKER_COMMITS_NUM }}
           sleep 1
           # make all  -j16
 
@@ -141,17 +141,19 @@ jobs:
           git log -8
           git status
           git branch
-
+          echo "SIZECHECKER_COMMIT=   ${{ github.event.pull_request.head.sha }}"
+          echo "SIZECHECKER_COMMITS_NUM=   ${{ github.event.pull_request.commits }}"
+          echo "SIZECHECKER_REPO_DEPTH=    $((${{ github.event.pull_request.commits }} + 1))"
 
       - name: testing_2
         run: | 
-             echo "GITLINT_HEAD_COMMIT=   ${{ github.event.pull_request.head.sha }}"
-             echo "GITLINT_COMMITS_NUM=   ${{ github.event.pull_request.commits }}"
-             echo "GITLINT_REPO_DEPTH=    $((${{ github.event.pull_request.commits }} + 1))"
+             echo "SIZECHECKER_COMMIT=   ${{ github.event.pull_request.head.sha }}"
+             echo "SIZECHECKER_COMMITS_NUM=   ${{ github.event.pull_request.commits }}"
+             echo "SIZECHECKER_REPO_DEPTH=    $((${{ github.event.pull_request.commits }} + 1))"
              
-             echo "GITLINT_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
-             echo "GITLINT_COMMITS_NUM=${{ github.event.pull_request.commits }}" >> $GITHUB_ENV &&
-             echo "GITLINT_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+             #echo "GITLINT_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+             #echo "GITLINT_COMMITS_NUM=${{ github.event.pull_request.commits }}" >> $GITHUB_ENV &&
+             #echo "GITLINT_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
 
 
 
