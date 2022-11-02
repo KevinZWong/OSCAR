@@ -198,8 +198,8 @@ jobs:
           # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
           # submodules: recursive
 
-          ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
-          fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
+       #   ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
+       #   fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
           
 
       - name: Calculation for Differences
