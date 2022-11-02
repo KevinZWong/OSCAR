@@ -26,12 +26,19 @@ jobs:
       # - name: work around permission issue, GitHub Actions #760
       #   run: git config --global --add safe.directory /__w/Oscar/Oscar
 
+      - name: 'Determine range of commits that going to be checked'
+        run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+             echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
+             echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+
       - name: Checkout the code
         uses: actions/checkout@v3
         with:
           # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
           # submodules: recursive
-          fetch-depth: 3
+
+          ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
+          fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
 
       # - name: Build Firmwares
       #   run: make all  -j16
@@ -52,7 +59,7 @@ jobs:
           echo ${{ github.event.pull_request.base.sha }}
           echo ${{ github.event.base_ref }}
           echo ${{ github.event.before }}
-          git log -3
+          git log -${{ env.SIZECHECKER_REPO_DEPTH }}
           git status
           git branch
 
@@ -138,7 +145,7 @@ jobs:
           echo ${{ github.event.pull_request.base.sha }}
           echo ${{ github.event.base_ref }}
           echo ${{ github.event.before }}
-          git log -8
+          git log -${{ env.SIZECHECKER_REPO_DEPTH }}
           git status
           git branch
           echo "SIZECHECKER_COMMIT=   ${{ github.event.pull_request.head.sha }}"
@@ -180,12 +187,20 @@ jobs:
     needs: [curBuild, prevBuild]
     runs-on: ubuntu-latest
     steps:
+      - name: 'Determine range of commits that going to be checked'
+        run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+             echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
+             echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 2))" >> $GITHUB_ENV
+
       - name: Checkout the code
         uses: actions/checkout@v3
         with:
           # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
           # submodules: recursive
-          fetch-depth: 3
+
+          ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
+          fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
+          
 
       - name: Calculation for Differences
         run: |
@@ -242,7 +257,7 @@ jobs:
         run: |
           echo "github.workspace =>   ${{ github.workspace }}"
           git status
-          git log -3
+          git log -${{ env.SIZECHECKER_REPO_DEPTH }}
           git branch
           printenv 
 
