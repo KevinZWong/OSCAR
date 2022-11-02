@@ -256,10 +256,10 @@ jobs:
       - name: Testing
         run: |
           echo "github.workspace =>   ${{ github.workspace }}"
-          git status
-          git log -${{ env.SIZECHECKER_REPO_DEPTH }}
-          git branch
-          printenv 
+      #    git status
+      #    git log -${{ env.SIZECHECKER_REPO_DEPTH }}
+      #    git branch
+      #    printenv 
 
       
       #- name: Publish unit tests results
