@@ -26,19 +26,19 @@ jobs:
       # - name: work around permission issue, GitHub Actions #760
       #   run: git config --global --add safe.directory /__w/Oscar/Oscar
 
-      - name: 'Determine range of commits that going to be checked'
-        run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
-             echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
-             echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+      #- name: 'Determine range of commits that going to be checked'
+      #  run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
 
       - name: Checkout the code
         uses: actions/checkout@v3
-        with:
+        #with:
           # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
           # submodules: recursive
-
-          ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
-          fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
+          
+       #   ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
+       #   fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
 
       # - name: Build Firmwares
       #   run: make all  -j16
@@ -59,7 +59,7 @@ jobs:
           echo ${{ github.event.pull_request.base.sha }}
           echo ${{ github.event.base_ref }}
           echo ${{ github.event.before }}
-          git log -${{ env.SIZECHECKER_REPO_DEPTH }}
+          #git log -${{ env.SIZECHECKER_REPO_DEPTH }}
           git status
           git branch
 
@@ -187,19 +187,19 @@ jobs:
     needs: [curBuild, prevBuild]
     runs-on: ubuntu-latest
     steps:
-      - name: 'Determine range of commits that going to be checked'
-        run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
-             echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
-             echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 2))" >> $GITHUB_ENV
+      #- name: 'Determine range of commits that going to be checked'
+      #  run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 2))" >> $GITHUB_ENV
 
       - name: Checkout the code
         uses: actions/checkout@v3
-        with:
+        #with:
           # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
           # submodules: recursive
 
-          ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
-          fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
+       #   ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
+       #   fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
           
 
       - name: Calculation for Differences
@@ -257,52 +257,25 @@ jobs:
         run: |
           echo "github.workspace =>   ${{ github.workspace }}"
           git status
-          git log -${{ env.SIZECHECKER_REPO_DEPTH }}
+          #git log -${{ env.SIZECHECKER_REPO_DEPTH }}
           git branch
-          printenv 
 
-      
-      #- name: Publish unit tests results
-      #  uses: EnricoMi/publish-unit-test-result-action@v2.0.0
-      #  if: always()
-      #  with:
-      #    junit_files: ${{ github.workspace }}/**/${{ env.RESULT }}
-      #    comment_title: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
-      #      Image Size Checker - Test</h1> ${{env.emojiState}} 
-      #      <h4>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
-      #      image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
-      #      Delta =  ${{ env.sDiff_A }} </h4>
-      #      <h4> For B image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
-      #      image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}   
-      #      Delta = ${{ env.sDiff_B }} </h4>
-      #      <h5> For current commit, delta between ImageA and ImageB is ${{ env.sDiff_cur_A_B }}<h5>
-      #      <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
-      #      <h6> Above results are comparing current commit <p><a href="${{env.COMMIT_LINK}}${{needs.curBuild.outputs.CUR_SHA}}">
-      #      ${{ needs.curBuild.outputs.CUR_SHA }}</a></p> vs. Previous commit 
-      #      <p><a href="${{env.COMMIT_LINK}}${{needs.prevBuild.outputs.PREV_SHA}}">
-      #      ${{ needs.prevBuild.outputs.PREV_SHA }}</a></p></h6></body></html>
-      #    ignore_runs: true
-      #    compare_to_earlier_commit: false
-      #  */
 
-      - name: Test with add-pr-comment
-        uses: mshick/add-pr-comment@v1
+      - name: Publish unit tests results
+        uses: marocchino/sticky-pull-request-comment@v2.3.0
         with:
           message: |
-            <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
-            Image Size Checker - Test</h1> ${{env.emojiState}} 
+            <html><body><h1>Image Size Checker - Test</h1> ${{env.emojiState}} 
             <h4>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
-            image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
+            image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}     
             Delta =  ${{ env.sDiff_A }} </h4>
             <h4> For B image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_B }}   
             image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_B }}   
             Delta = ${{ env.sDiff_B }} </h4>
             <h5> For current commit, delta between ImageA and ImageB is ${{ env.sDiff_cur_A_B }}<h5>
             <h5> For previous commit, delta between ImageA and ImageB is ${{ env.sDiff_prev_A_B }}<h5>
-            <h6> Above results are comparing current commit <p><a href="${{env.COMMIT_LINK}}${{needs.curBuild.outputs.CUR_SHA}}">
-            ${{ needs.curBuild.outputs.CUR_SHA }}</a></p> vs. Previous commit 
-            <p><a href="${{env.COMMIT_LINK}}${{needs.prevBuild.outputs.PREV_SHA}}">
+            <h6> Above results are comparing current commit 
+            <p><a href="${{env.COMMIT_LINK}}${{needs.curBuild.outputs.CUR_SHA}}">${{ needs.curBuild.outputs.CUR_SHA }}</a></p> 
+            vs. Previous commit <p><a href="${{env.COMMIT_LINK}}${{needs.prevBuild.outputs.PREV_SHA}}">
             ${{ needs.prevBuild.outputs.PREV_SHA }}</a></p></h6></body></html>
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
-          allow-repeats: false # This is the default
+
