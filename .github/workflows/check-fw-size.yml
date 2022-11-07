@@ -285,11 +285,10 @@ jobs:
       #    compare_to_earlier_commit: false
       #  */
 
-      - name: Test with add-pr-comment
-        uses: mshick/add-pr-comment@v1
+      - name: Publish unit tests results
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          message: |
-            <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'> 
+          message: <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'>
             Image Size Checker - Test</h1> ${{env.emojiState}} 
             <h4>For A image_size_without_this_pr = ${{ needs.prevBuild.outputs.PREV_BUILD_IMAGE_A }}   
             image_size_with_this_pr = ${{ needs.curBuild.outputs.CUR_BUILD_IMAGE_A }}   
@@ -303,6 +302,3 @@ jobs:
             ${{ needs.curBuild.outputs.CUR_SHA }}</a></p> vs. Previous commit 
             <p><a href="${{env.COMMIT_LINK}}${{needs.prevBuild.outputs.PREV_SHA}}">
             ${{ needs.prevBuild.outputs.PREV_SHA }}</a></p></h6></body></html>
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
-          allow-repeats: false # This is the default
