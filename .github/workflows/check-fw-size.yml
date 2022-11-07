@@ -262,7 +262,7 @@ jobs:
 
 
       - name: Publish unit tests results
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v2.3.0
         with:
           message: |
             <html><body><h1>Image Size Checker - Test</h1> ${{env.emojiState}} 
