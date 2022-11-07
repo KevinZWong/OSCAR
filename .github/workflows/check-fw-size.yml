@@ -266,7 +266,7 @@ jobs:
         with:
           header: <h1 style='color:rgb(255, 0, 0);'>Image Size Checker - Test</h1>
           message: |
-            New Title - guo
+            New Title - guo1
             ```
             <!DOCTYPE html><html><body><h1 style='color:rgb(255, 0, 0);'>
             Image Size Checker - Test</h1> ${{env.emojiState}} 
