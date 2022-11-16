@@ -1,0 +1,241 @@
+name: try_10
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  BUILD_RUN_NUMBER: ${{ github.run_number }}
+  CONFIG_PATH: "./images/size_checker/"
+  CONFIG_FILE: "size_checker.conf"
+  COMMIT_LINK: "https://github.com/KevinZWong/OSCAR/commit/"
+
+jobs:
+  curBuild1:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: docker://chewielabs/devenv:version-1.6
+    #   credentials:
+    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #     password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    outputs:
+      CUR_BUILD_IMAGE_A: ${{ steps.get_cur_imageA.outputs.imageA }}
+      CUR_BUILD_IMAGE_B: ${{ steps.get_cur_imageB.outputs.imageB }}
+      CUR_SHA: ${{ steps.get_cur_sha.outputs.sha}}
+    steps:
+      # - name: work around permission issue, GitHub Actions #760
+      #   run: git config --global --add safe.directory /__w/Oscar/Oscar
+
+      #- name: 'Determine range of commits that going to be checked'
+      #  run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        #with:
+          # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          # submodules: recursive
+          
+       #   ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
+       #   fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
+
+      - name: debugging
+        run : |
+          git status
+          git branch
+          git log -10
+
+      # - name: Build Firmwares
+      #   run: make all  -j16
+
+      - name: testing
+        run: |
+          pwd
+          mkdir sam4s/; cd sam4s/
+          mkdir cli_app/; cd cli_app/
+          mkdir build-evt-debug/; cd build-evt-debug/
+          echo "guo123-Added12" > ./oscar_controls_app-A.bin
+          echo "wong456-Added" > ./oscar_controls_app-B.bin
+          cd ../../..
+
+          ls -al sam4s/cli_app/build-evt-debug/
+          echo "GITHUB_SHA:  ${GITHUB_SHA}"
+          echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event.pull_request.base.sha }}
+          echo ${{ github.event.base_ref }}
+          echo ${{ github.event.before }}
+          #git log -${{ env.SIZECHECKER_REPO_DEPTH }}
+          git status
+          git branch
+
+      - id: get_cur_sha
+        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - id: get_cur_imageA
+        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+
+      - id: get_cur_imageB
+        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+     
+      - name: get build-evt-debug fw size
+        run: |
+          fsizeA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')
+          echo "$fsizeA"
+          fsizeB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')
+          echo "$fsizeB"
+          sizeDiff=$((fsizeA - fsizeB))
+          echo $sizeDiff
+
+  curBuild2:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: docker://chewielabs/devenv:version-1.6
+    #   credentials:
+    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #     password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    outputs:
+      CUR_BUILD_IMAGE_A: ${{ steps.get_cur_imageA.outputs.imageA }}
+      CUR_BUILD_IMAGE_B: ${{ steps.get_cur_imageB.outputs.imageB }}
+      CUR_SHA: ${{ steps.get_cur_sha.outputs.sha}}
+    steps:
+      # - name: work around permission issue, GitHub Actions #760
+      #   run: git config --global --add safe.directory /__w/Oscar/Oscar
+
+      #- name: 'Determine range of commits that going to be checked'
+      #  run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        #with:
+          # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          # submodules: recursive
+          
+       #   ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
+       #   fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
+
+      - name: debugging
+        run : |
+          git status
+          git branch
+          git log -10
+
+      # - name: Build Firmwares
+      #   run: make all  -j16
+
+      - name: testing
+        run: |
+          pwd
+          mkdir sam4s/; cd sam4s/
+          mkdir cli_app/; cd cli_app/
+          mkdir build-evt-debug/; cd build-evt-debug/
+          echo "guo123-Added12" > ./oscar_controls_app-A.bin
+          echo "wong456-Added" > ./oscar_controls_app-B.bin
+          cd ../../..
+
+          ls -al sam4s/cli_app/build-evt-debug/
+          echo "GITHUB_SHA:  ${GITHUB_SHA}"
+          echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event.pull_request.base.sha }}
+          echo ${{ github.event.base_ref }}
+          echo ${{ github.event.before }}
+          #git log -${{ env.SIZECHECKER_REPO_DEPTH }}
+          git status
+          git branch
+
+      - id: get_cur_sha
+        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - id: get_cur_imageA
+        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+
+      - id: get_cur_imageB
+        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+     
+      - name: get build-evt-debug fw size
+        run: |
+          fsizeA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')
+          echo "$fsizeA"
+          fsizeB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')
+          echo "$fsizeB"
+          sizeDiff=$((fsizeA - fsizeB))
+          echo $sizeDiff
+
+
+  curBuild3:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: docker://chewielabs/devenv:version-1.6
+    #   credentials:
+    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #     password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    outputs:
+      CUR_BUILD_IMAGE_A: ${{ steps.get_cur_imageA.outputs.imageA }}
+      CUR_BUILD_IMAGE_B: ${{ steps.get_cur_imageB.outputs.imageB }}
+      CUR_SHA: ${{ steps.get_cur_sha.outputs.sha}}
+    steps:
+      # - name: work around permission issue, GitHub Actions #760
+      #   run: git config --global --add safe.directory /__w/Oscar/Oscar
+
+      #- name: 'Determine range of commits that going to be checked'
+      #  run: echo "SIZECHECKER_HEAD_COMMIT=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
+      #       echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 1))" >> $GITHUB_ENV
+
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        #with:
+          # token: ${{ secrets.MACHINE_ACCESS_TOKEN }}
+          # submodules: recursive
+          
+       #   ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
+       #   fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
+
+      - name: debugging
+        run : |
+          git status
+          git branch
+          git log -10
+
+      # - name: Build Firmwares
+      #   run: make all  -j16
+
+      - name: testing
+        run: |
+          pwd
+          mkdir sam4s/; cd sam4s/
+          mkdir cli_app/; cd cli_app/
+          mkdir build-evt-debug/; cd build-evt-debug/
+          echo "guo123-Added12" > ./oscar_controls_app-A.bin
+          echo "wong456-Added" > ./oscar_controls_app-B.bin
+          cd ../../..
+
+          ls -al sam4s/cli_app/build-evt-debug/
+          echo "GITHUB_SHA:  ${GITHUB_SHA}"
+          echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event.pull_request.base.sha }}
+          echo ${{ github.event.base_ref }}
+          echo ${{ github.event.before }}
+          #git log -${{ env.SIZECHECKER_REPO_DEPTH }}
+          git status
+          git branch
+
+      - id: get_cur_sha
+        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - id: get_cur_imageA
+        run: echo "imageA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+
+      - id: get_cur_imageB
+        run: echo "imageB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')" >> $GITHUB_OUTPUT
+     
+      - name: get build-evt-debug fw size
+        run: |
+          fsizeA=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-A.bin | awk '{print $1}')
+          echo "$fsizeA"
+          fsizeB=$(wc -c sam4s/cli_app/build-evt-debug/oscar_controls_app-B.bin | awk '{print $1}')
+          echo "$fsizeB"
+          sizeDiff=$((fsizeA - fsizeB))
+          echo $sizeDiff          
