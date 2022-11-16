@@ -40,6 +40,14 @@ jobs:
           ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
           fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
 
+      - name: debugging
+        run : |
+          echo "SIZECHECKER_HEAD_COMMIT= ${{ env.SIZECHECKER_HEAD_COMMIT }}"
+          echo "SIZECHECKER_REPO_DEPTH= ${{ env.SIZECHECKER_REPO_DEPTH }}"
+          git status
+          git branch
+          git log -${{ env.SIZECHECKER_REPO_DEPTH }}
+
       # - name: Build Firmwares
       #   run: make all  -j16
 
@@ -101,7 +109,6 @@ jobs:
              echo "SIZECHECKER_COMMITS_NUM=$((${{ github.event.pull_request.commits }}))" >> $GITHUB_ENV &&
              echo "SIZECHECKER_REPO_DEPTH=$((${{ github.event.pull_request.commits }} + 2))" >> $GITHUB_ENV
 
-
       - name: Checkout the code
         uses: actions/checkout@v3
         with:
@@ -110,6 +117,14 @@ jobs:
 
           ref: ${{ env.SIZECHECKER_HEAD_COMMIT }}
           fetch-depth: ${{ env.SIZECHECKER_REPO_DEPTH }}
+
+      - name: debugging
+        run : |
+          echo "SIZECHECKER_HEAD_COMMIT= ${{ env.SIZECHECKER_HEAD_COMMIT }}"
+          echo "SIZECHECKER_REPO_DEPTH= ${{ env.SIZECHECKER_REPO_DEPTH }}"
+          git status
+          git branch
+          git log -${{ env.SIZECHECKER_REPO_DEPTH }}
 
       - name: Build Firmwares
         run: |
