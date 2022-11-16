@@ -46,7 +46,7 @@ jobs:
           echo "SIZECHECKER_REPO_DEPTH= ${{ env.SIZECHECKER_REPO_DEPTH }}"
           git status
           git branch
-          git log -10
+          git log -${{ env.SIZECHECKER_REPO_DEPTH }}
           
 
       # - name: Build Firmwares
